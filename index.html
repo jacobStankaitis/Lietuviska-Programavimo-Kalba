@@ -1,0 +1,599 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="lt-lt" xml:lang="lt-lt">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="content-language" content="lt-lt" />
+
+<title>Dibilų kalbos interpretatorius (ir transliatorius į JavaScript)</title>
+<meta name="description" content="Dibilų kalbos interpretatorius ir transliatorius į JavaScript kalbą">
+<meta name="keywords" content="Programavimas, dibilai, interpretatorius, transliatorius">
+<script src="js/jquery-1.6.1.min.js" type="text/javascript"></script>
+<script src="js/jquery.tabify.min.js" type="text/javascript"></script>
+<script src="js/dragify_jquery.js" type="text/javascript"></script>
+<script src="js/loljs.js" type="text/javascript"></script> 
+<script src="js/loljs_examples.js" type="text/javascript"></script> 
+<script src="js/jquery.luminousify.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+
+
+lolspace_set_puts(function(str, newline){
+  var stdout = $('#stdout');
+  str = str.replace(/&/g, '&amp;').replace(/>/g, '&gt;').replace(/</g, '&lt;');
+  $(stdout).text($(stdout).text() + str + ((newline !== false)? '\n' : ''));
+});
+
+
+
+
+$(document).ready(function() {
+  
+  var lms_opts = {
+        url: 'highlight.php',
+        defaultLanguage: 'lolcode',
+        delay: 50,
+        path: 'luminous/',
+        style: 'github.css',
+        inline: true
+  };
+  
+  
+  var el = $('#example_selector');
+
+  for (name in examples)
+  {
+    $(el).append('<option value="' + name + '">' + name + '</option>');
+  } 
+  $(el).change(function(e){
+    $('#input').val( examples[$(this).val()] );
+  });
+  
+  $(el).trigger('change');
+  
+  $('#submit').click(function(e){
+    var js = loljs($('#input').val());
+    function escape_(code) {
+      return code.replace(/&/g, '&amp').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+    function unescape_(code) {
+      return code.replace(/&amp/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+    }
+
+    $('#lolcode_display').html('<pre id=lolcode_topretty lang="lolcode">' +
+      escape_($('#input').val()) + '</pre>');
+
+    $('#js_display').html('<pre id=js_topretty lang="js">' +
+      escape_(js) + '</pre>');
+
+    
+    $('#js_topretty, #lolcode_topretty').each(function() {
+      $(this).luminousify($.extend({}, lms_opts, {line_numbers: true, inline: false}));
+    });
+    
+    
+    // this is a really bad attempt to sandbox the code.
+    // at the very least, we don't want it to permanently define any globals because these might interfere
+    // with subsequent executions.
+    // doesn't work in IE (does anything?)
+    if (!$.browser.msie)
+    {
+      var w = [];
+      for (var name in window)
+        w[name] = window[name];
+    
+      eval(js);
+      for (var name in window)
+      {
+        try { 
+          if (!(name in w))
+            delete window[name];
+          else if(window[name] != w[name])
+            window[name] = w[name];
+        } catch(e) { continue; }
+      }
+    }
+    else eval(js);
+    
+  });
+ $('#page').tabify($('#tab_selector'));
+ 
+  var cheat_c = $('#cheatsheet');//.clone();
+  // gaah this is a mess
+  
+  // ie7 and below return null on window.open, it seems, so disable it
+  if ($.browser.msie && Number($.browser.version < 8))
+    $('#cheat_new').hide();
+  $('#cheat_new').click(function(){
+    var w_ = window.open();
+    if (!w_ ) {
+      $('#stdout').append('Sorry, your browser doesn\'t support this!\n');
+      return;
+    }
+      
+    var w = w_.top;
+    w.document.open();
+    w.document.write('<html><head>');
+    w.document.write('<\/head><body>');
+    w.document.write('<\/body><\/html>');
+    w.document.close();
+    
+    var head = $('head', $(w.document));
+    var style = 'pre.eg {display:inline-block; background-color:#e0e0e0; margin-top:0; margin-bottom:0; font-weight:bold;}\
+a, a:visited {color:#008CFF; cursor: default}\
+body {font-size:10pt; font-family:helvetica; }\
+h3 { border-bottom: 2px solid #0066FF; padding-left: 2em} \
+span.luminous_inline { display:inline-block; }\
+pre.luminous_inline {margin-top:0; margin-bottom:0}\
+';
+    var css = w.document.createElement('style');
+    css.type = 'text/css';
+    if (css.styleSheet) 
+      css.styleSheet.cssText = style;
+    else 
+      $(css).text(style);
+    head.append(css);
+    
+    var links = ['/code/luminous/style/luminous.css', '/code/luminous/style/zenophilia.css'];
+    for (var i=0; i<links.length; i++)
+    {
+      var l = w.document.createElement('link');
+      l.type = 'text/css';
+      l.href = links[i];
+      l.rel = 'stylesheet';
+      head.append(l);
+    }
+    
+    var body = $('body', $(w.document));
+    body.css({'margin-right': '1em', 'margin-left' : '1em'} );
+    var contents = $('<div>').css('margin-left', '1em');
+    var cheat = $('#cheat_contents',cheat_c).clone();
+    $('h3', cheat).each(function(i) {
+      $(this).attr('id', 'h_' + i);
+      var $a = $('<a>' + $(this).text() + '</a>');
+      var $h = $(this);
+      $a.click(function() {
+        w.scrollTo(0, $h.offset().top);
+      });
+      contents.append($a);
+      contents.append('<br>');
+    });
+    $('.tab', cheat).show().css('opacity', '1');
+    
+    $(cheat).css( {
+      'position' : 'static',
+      'height' : 'auto', 
+      'width' : '100%'
+      } 
+    );
+    
+    // IE has problems inserting nodes from this window into the new window.
+    // http://tamentis.com/doc/no_such_interface/
+    // That means we've got to use innerHTML to copy the node entirely, but 
+    // we lose the click event handlers, so we'll just drop the contents table.
+    var ie8 = ($.browser.msie && Number($.browser.version) < 9);
+    body.append('<h2>Contents</h2>');
+    if (!ie8) 
+      body.append(contents); 
+    body.append('<p>BTW: Sorry but your back and forward buttons won\'t work :( I did my best but the window breaks with \'real\' links in the contents</p>');
+    if (ie8) 
+      body.append(cheat.get(0).innerHTML);
+    else {
+      body.append(cheat);
+      $('pre.eg', cheat).luminousify(lms_opts);
+    }
+ });
+ 
+ $('#cheat_contents').tabify($('#cheat_menu')).parent().hide();
+ 
+ $('#cheat').click(function(){
+   $('#cheatsheet').slideDown()
+ });
+
+ 
+ $('#cheatsheet').dragify($('#cheat_bar'));
+
+ 
+ $('#close_cheatsheet').click(function(){
+   $('#cheatsheet').slideUp();
+ });
+   
+ $('#clearstdout').click(function() { $('#stdout').html(''); } );
+ 
+ 
+  $('pre.eg').luminousify(lms_opts);
+
+});
+</script>
+
+<style type="text/css">
+body {font-size:10pt; font-family:helvetica; }
+#page { min-width: 720px; width: 80%;
+  float: left;
+
+}
+h1 { font-size:12pt; text-align:center; }
+h3 { font-size:10pt; text-align:center; }
+a, a:visited {color:#008CFF;}
+a.tab_clicker_active { font-weight:bold;}
+a:hover{color:#008CFF;}
+pre.eg {display:inline-block; background-color:#e0e0e0; margin-top:0; margin-bottom:0; font-weight:bold;}
+
+span.luminous_inline { display:inline-block; }
+pre.luminous_inline {margin-top:0; margin-bottom:0}
+
+#cheatsheet h3 {margin-top:0.25em;}
+#cheat_contents {padding-left:1em; padding-right:1em;}
+#cheatsheet .tab_title {cursor:default;}
+#cheat_menu h3 {margin-bottom:0;}
+#cheat_menu a {color:black; }
+#cheat_menu a:hover {color:#0066FF;}
+
+#ad { 
+float: left;
+margin: 1em;
+margin-left: 0;
+}
+
+</style>
+
+
+<link rel="stylesheet" type="text/css" href="./lolcode_files/luminous.css"><link rel="stylesheet" type="text/css" href="./lolcode_files/github.css"></head>
+<body>
+
+<h1 style="padding:6px; border:2px solid #88AAFF; background:#EEF8FF;">Dibilų kalbos interpretatorius ir transliatorius į JavaScript pagal specifikaciją iš <a href="http://www.pipedija.com/index.php/Dibil%C5%B3_kalba" target="_blank">Dibilų kalba 1.0</a></h1>
+
+<noscript>Šitas dalykas veikia tiktai su JavaScript, taigi, pasirinkite - arba įsijungiate JavaScript, arba nieko nematote.</noscript>
+
+<!--[if lte IE 7]> <div style='text-align:center; font-weight:bold'> This page won't work with your browser. Get a modern one! <a href='http://www.mozilla.com/'>Firefox</a> </div> <![endif]-->
+<!--[if IE]> <div style='text-align:center; font-weight:bold'> Some of these examples won't work with Internet Explorer because it disables the prompt() function, and it retains variables across calls so you may need to refresh the page after executing anything. </div> <![endif]-->
+  
+
+<div id="tab_selector" style="position:relative; margin-bottom:1em; display:none;">
+  <strong class="tab_selected">Show</strong>:
+  <a href="#" id="input_clicker" class="tab_clicker tab_title">Input</a>
+  <a href="#" id="javascript_clicker" class="tab_clicker tab_title">JavaScript</a>
+  <a href="#" id="lolcode_clicker" class="tab_clicker tab_title">Syntax Highlighted LOLCODE</a>
+  <a href="#" id="about_clicker" class="tab_clicker tab_title">About</a>
+</div>
+
+<div>Čia jums kažkas gali ir neveikti, bet visgi interpretatorius darbingas, tad juo labiausiai ir verta jums pasismaginti.</div>
+
+
+<div id="page">
+  <div id="inp_tab" style="display: block;" class="tab">
+
+    <table style="width:100%"><tbody><tr><td style="vertical-align:top; width:55%;">
+      <h3>Įvestis - čionai rašykit</h3>
+      <div>
+      <div id="example_holder"><strong>Pavyzdžiai</strong>: <select id="example_selector"></select>
+      <div style="float:right; right:0px; display:none;"><a href="#" id="cheat">Show cheat sheet</a> <a href="http://asgaard.co.uk/misc/loljs/#" id="cheat_new">(new window)</a></div>
+      </div>
+      <textarea id="input" style="width:100%" rows="25"></textarea>
+      <br>
+      <div>Turėkite omeny, kad čia yra pilnavertė Tiuringo mašina. Tai reiškia, kad jūs visada galite parašyti begalinį ciklą ar rekursiją, kuri jūsų naršyklę pakabins brutualiausiu būdu. Jei taip atsitiks - kaltinkite save ir mokykitės, kad neatsitiktų. Ir žinoma, išsisaugokite kažkur tą savo programą, kad ji, jei pakibs, nedingtų.<br>
+        Klaidų aptikimas yra prastas, taigi, jei nematote rezultato - tikrinkitės savo programą, nes greičiausiai kažkur interpretatorius pastrigo.
+</div>
+      <p>
+      <input type="submit" id="submit" value="Vykdyti programą">
+      </p></div>
+    </td><td style="vertical-align:top; width:45%; padding-left:2em;">
+      <h3>Išvestis - čionai skaitykit</h3> 
+      <div id="stdout_holder" style="margin-top:2em; padding:4px; border:2px dotted #CCEEEE;">
+      <input type="button" id="clearstdout" value="Išvalyti">
+      <pre id="stdout"></pre>
+      </div>      
+    </td></tr></tbody></table>
+  </div>
+  
+  <div id="js_tab" class="tab" style="display: none;">
+    <h2>Translated JavaScript</h2>
+    <div id="js_display"><div class="luminous luminousified"><pre class="code numbers line-no-width-2" style="counter-increment: term 0; "><span class="line alt"><span class="keyword">var</span> IT<span class="operator">;</span></span><span class="line">IT <span class="operator">=</span> AI<span class="operator">;</span></span><span class="line alt"></span><span class="line">IT <span class="operator">=</span> <span class="constant">PLZOPENFILE</span><span class="string">"LOLCATS.TXT"</span><span class="operator">;</span></span><span class="line alt">IT <span class="operator">=</span> <span class="constant">AWSUMTHX</span><span class="operator">;</span></span><span class="line">lolspace_puts(<span class="constant">FILE</span><span class="operator">,</span><span class="keyword">true</span>)<span class="operator">;</span></span><span class="line alt">IT <span class="operator">=</span> <span class="constant">ONOES</span><span class="operator">;</span></span><span class="line">IT <span class="operator">=</span> <span class="constant">INVISIBLE</span><span class="string">"ERRROR!"</span><span class="operator">;</span></span><span class="line alt"></span><span class="line"></span></pre></div></div>
+  </div>
+
+  <div id="lolcode_tab" class="tab" style="display: none;">
+    <h2>Prettified lolcode</h2>
+    <div id="lolcode_display"><div class="luminous luminousified"><pre class="code numbers line-no-width-1" style="counter-increment: term 0; "><span class="line alt">AI</span><span class="line"> <span class="keyword">CAN</span> <span class="keyword">HAS</span> STDIO?</span><span class="line alt"> PLZ OPEN FILE <span class="string">"LOLCATS.TXT"</span>?</span><span class="line">     AWSUM THX</span><span class="line alt">         <span class="function">VISIBLE</span> FILE</span><span class="line">     <span class="keyword">O</span> NOES</span><span class="line alt">         INVISIBLE <span class="string">"ERRROR!"</span></span><span class="line"><span class="keyword">KTHXBYE</span></span></pre></div></div>
+  </div>
+  
+  <div id="about_tab" class="tab" style="display: none;">
+    <h2>About</h2>
+    
+    <p>    
+    </p><h3>HAI</h3>
+    This page implements a rough interpreter for 
+    <a href="http://www.lolcode.com/" target="_blank">LOLCODE</a> by way of 
+    translating the LOLCODE into JavaScript then letting your browser figure it
+    out. It aims to implement the 1.2 specification. It's not complete 
+    (or perfect) but it does run a few demo programs. It won't run some 
+    code which can be found in various places online because their constructs 
+    don't seem to be defined in the spec. In fact most of the available example
+    LOLCODE seems to be a proposal, and there often exist several variations
+    on it.
+    <p>
+    </p><h3>OBTW</h3>
+    Some things to watch out for:
+    <ul>
+      <li> 
+        Avoid using identifiers like:
+        <div class="luminous inline"><pre class="code" style=""><span class="type">NUMBR</span></pre></div>, <div class="luminous inline"><pre class="code" style=""><span class="type">NUMBAR</span></pre></div>, 
+        <div class="luminous inline"><pre class="code" style=""><span class="type">TROOF</span></pre></div>, <div class="luminous inline"><pre class="code" style=""><span class="type">YARN</span></pre></div>,
+        <div class="luminous inline"><pre class="code" style=""><span class="type">NOOB</span></pre></div>, as these are types
+        (float, int, bool, string, null).
+      </li>
+      <li>Don't use brackets to group operations, it's not necessary and
+      the parser doesn't recognise them. See the cheat sheet's page on
+      operators.
+      </li>    
+      <li>
+      If you want to place multiple commands on a line, like:
+      <div class="luminous inline"><pre class="code" style=""><span class="operator">BOTH SAEM</span> <span class="numeric">1</span> <span class="operator">AN</span> <span class="value">WIN</span>, <span class="keyword">O</span> <span class="keyword">RLY?</span></pre></div>,
+      use the ',' comma to separate them.
+      </li>
+    </ul>
+    <h3>TLDR</h3>
+    <p>
+    If you want to make this implementation better/worse or just use it for
+    LOLcat related hilarity on your website (it would be fun to expand it to
+    allow basic DOM manipulation), the code is online and free 
+    <a href="http://code.google.com/p/loljs/" target="_blank">here</a>. 
+    </p><p>
+    Note: largely untested on Internet Explorer, whose JavaScript engine is
+    fussy at the best of times.
+    </p><h3>KTHXBYE</h3>
+    TODO list:
+      <ul>
+        <li>inline casting, e.g. 
+        <div class="luminous inline"><pre class="code" style=""><span class="keyword">MAEK</span> <span class="operator">PRODUKT OF</span> <span class="numeric">1</span> <span class="operator">AN</span> <span class="numeric">2</span> <span class="keyword">A</span> <span class="type">YARN</span></pre></div> 
+          (i.e. (String)(1*2))  (did I do this? I think I did)</li>
+        <li>better syntax validation and more helpful error messages</li>
+        <li>There's a bunch of pre-processing stuff which strips out comments and aliases string literals and aliases some commands. It's all hackish and breakable. You can probably make it break if you write something like "BTW", it'll strip this to "</li>
+      </ul>
+  </div>
+</div>
+
+
+<div style="clear:both;"></div>
+
+
+<div id="cheatsheet" style="position: absolute; z-index: 1; left: 20%; top: 20%; width: 40%; height: 400px; border: 1px solid black; background-color: white; display: none;">
+
+
+  <div id="cheat_bar" style="background-color:#D8EDFF; border-bottom:1px dashed black; padding-right:0.5em; vertical-align:center; cursor:move; text-align:center">  <strong>LOLCODE cheat sheet for loljs</strong> <img src="./lolcode_files/window-close.png" id="close_cheatsheet" style="cursor:default; float:right"> </div>
+  <div id="cheat_contents" style="overflow:auto; height:320px;">
+  
+    <div class="tab" style="display: block;"> 
+      <h3> Comments and Whitespace </h3>  
+      Whitespace is largely ignored, but commands should generally be placed one per line. To put multiple commands
+      on one line, separate them with a comma.
+      <p>
+      Comments can extend until the end of the line if they are opened with BTW: </p><div class="luminous inline"><pre class="code" style=""><span class="keyword">HAI</span> <span class="comment">BTW this is a comment</span></pre></div>
+      <p>Or they can be arbitrary length if opened with OBTW:
+      </p><div class="luminous inline"><pre class="code" style=""><span class="comment">OBTW  </span>
+<span class="comment">  this</span>
+<span class="comment">  is</span>
+<span class="comment">  a</span>
+<span class="comment">  multi-line</span>
+<span class="comment">  comment</span>
+<span class="comment">TLDR</span></pre></div>
+
+    </div>
+    <div class="tab" style="display: none;"> <h3> IO </h3>
+      Output can be printed to the screen by using <div class="luminous inline"><pre class="code" style=""><span class="function">VISIBLE</span></pre></div>. If the final
+      argument of <div class="luminous inline"><pre class="code" style=""><span class="function">VISIBLE</span></pre></div> is an exclamation point (!) then a newline is 
+      not printed afterwards.
+      <br><br>Input can be requested by using <div class="luminous inline"><pre class="code" style=""><span class="function">GIMMEH</span> VARNAME</pre></div> which inserts
+      the value (as string) the user provides into the variable called VARNAME
+      <p>Obviously, being JavaScript, no file IO is available.
+    </p></div>
+    <div class="tab" style="display: none;"> 
+      <h3> Variables and Types </h3>
+      Variables are declared as follows: <div class="luminous inline"><pre class="code" style=""><span class="keyword">I</span> <span class="keyword">HAS</span> <span class="keyword">A</span> NUMBER</pre></div>  and they are assigned by: 
+      <div class="luminous inline"><pre class="code" style="">NUMBER <span class="keyword">R</span> <span class="numeric">12</span></pre></div>
+      <br> They may also be assigned at declaration:  <div class="luminous inline"><pre class="code" style=""><span class="keyword">I</span> <span class="keyword">HAS</span> <span class="keyword">A</span> NUMBER <span class="keyword">ITZ</span> <span class="numeric">12</span></pre></div>
+            
+      <br><br> LOLCODE recognises the types:<div class="luminous inline"><pre class="code" style=""><span class="type">NUMBR</span></pre></div>, <div class="luminous inline"><pre class="code" style=""><span class="type">NUMBAR</span></pre></div>, 
+        <div class="luminous inline"><pre class="code" style=""><span class="type">TROOF</span></pre></div>, <div class="luminous inline"><pre class="code" style=""><span class="type">YARN</span></pre></div>,
+        <div class="luminous inline"><pre class="code" style=""><span class="type">NOOB</span></pre></div>  and <div class="luminous inline"><pre class="code" style="">BUKKIT</pre></div> as float, int, bool, string, and null, and array respectively.
+        
+      <br><br>YARN literals are defined between " and ", but :" is an escape sequence. TROOF literals are <div class="luminous inline"><pre class="code" style=""><span class="value">WIN</span></pre></div>
+      and <div class="luminous inline"><pre class="code" style=""><span class="value">FAIL</span></pre></div> (true and false).
+      <p>Type casting works as follows:
+      <br>
+      </p><div class="luminous inline"><pre class="code" style=""><span class="keyword">I</span> <span class="keyword">HAS</span> <span class="keyword">A</span> NUMBER <span class="keyword">ITZ</span> <span class="numeric">12</span>
+<span class="comment">BTW x_ R MAEK y_ A TYPE is equivalent to x_ = (TYPE)y_</span>
+NUMBER <span class="keyword">R</span> <span class="keyword">MAEK</span> NUMBER <span class="keyword">A</span> <span class="type">YARN</span>   <span class="comment">BTW number == "12"</span>
+<span class="comment">BTW you can also use 'IS NOW A'</span>
+NUMBER <span class="keyword">IS</span> <span class="keyword">NOW</span> <span class="keyword">A</span> <span class="type">TROOF</span> <span class="comment">BTW number == true</span>
+NUMBER <span class="keyword">IS</span> <span class="keyword">NOW</span> <span class="keyword">A</span> <span class="type">NOOB</span>  <span class="comment">BTW number == null</span>
+NUMBER <span class="keyword">IS</span> <span class="keyword">NOW</span> <span class="keyword">A</span> <span class="type">NUMBAR</span>  <span class="comment">BTW number == 0</span></pre></div>
+    <h3> Arrays </h3>
+    <p> Array support is not defined in the LOLCODE 1.2 spec so I have taken a 
+        few liberties. An array is declared with:
+     </p><div class="luminous inline"><pre class="code" style=""><span class="keyword">I</span> <span class="keyword">HAS</span> <span class="keyword">A</span> ARRAY <span class="keyword">ITZ</span> GOT <span class="numeric">1</span> <span class="operator">AN</span> <span class="numeric">2</span> <span class="operator">AN</span> <span class="numeric">3</span>
+<span class="comment">BTW ARRAY = [1, 2, 3]</span>
+<span class="keyword">I</span> <span class="keyword">HAS</span> <span class="keyword">A</span> NOTHERARRAY <span class="keyword">ITZ</span> GOT NOTHING
+<span class="comment">BTW ARRAY = []</span>
+<span class="keyword">I</span> <span class="keyword">HAS</span> YETANOTHERARRAY <span class="keyword">ITZ</span> GOT <span class="numeric">1</span> <span class="operator">AN</span> NOTHING ELSE
+<span class="comment">BTW ARRAY = [1]</span></pre></div>
+    <p> The last construct is redundant, NOTHING ELSE is not required. 
+        Assignment after declaration works almost as usual: 
+</p><div class="luminous inline"><pre class="code" style="">ARRAY <span class="keyword">R</span> GOT <span class="numeric">1</span> <span class="operator">AN</span> <span class="numeric">2</span> <span class="operator">AN</span> <span class="numeric">3</span>
+<span class="comment">BTW ARRAY = [1, 2, 3]</span></pre></div>
+  <p> Array access works with a single '!':
+  </p><div class="luminous inline"><pre class="code" style="">ARRAY <span class="keyword">R</span> GOT <span class="numeric">1</span> <span class="operator">AN</span> <span class="numeric">2</span> <span class="operator">AN</span> <span class="numeric">3</span>
+<span class="function">VISIBLE</span> ARRAY!<span class="numeric">0</span>
+<span class="function">VISIBLE</span> ARRAY!<span class="numeric">1</span></pre></div><p> these can also be used for assignment directly
+  into the given indices. This also allows for multi-dimensional arrays 
+
+  </p><div class="luminous inline"><pre class="code" style=""><span class="keyword">I</span> <span class="keyword">HAS</span> <span class="keyword">A</span> ARRAY <span class="keyword">ITZ</span> GOT NOTHING
+ARRAY!<span class="numeric">0</span> <span class="keyword">R</span> GOT <span class="value">FAIL</span> <span class="operator">AN</span> <span class="value">WIN</span>
+ARRAY!<span class="numeric">1</span> <span class="keyword">R</span> GOT <span class="numeric">0</span> <span class="operator">AN</span> <span class="numeric">1</span>
+<span class="comment">BTW ARRAY = [[false, true], [0, 1]]</span></pre></div>
+<p> Arrays and strings have the special 'LEN OF' operator available which
+  returns the number of items they hold (at their first level)
+  
+  
+  
+
+    </p></div> 
+
+    <div class="tab" style="display: none;"> 
+      <h3> Control </h3>
+      Conditional statements can be created with either 
+      <div class="luminous inline"><pre class="code" style=""><span class="keyword">IZ</span> VAR1 [BIGGR|SMALLR] THAN VAR2?  .... <span class="keyword">KTHX</span></pre></div>
+      <br>
+      or <div class="luminous inline"><pre class="code" style="">VAR1, <span class="keyword">O</span> <span class="keyword">RLY?</span>, <span class="keyword">YA</span> <span class="keyword">RLY</span> ... <span class="keyword">OIC</span></pre></div>
+      
+      <p>An example follows:
+      </p><div class="luminous inline"><pre class="code" style=""><span class="keyword">I</span> <span class="keyword">HAS</span> <span class="keyword">A</span> FOOD <span class="keyword">ITZ</span> <span class="string">"CHEEZBURGER"</span>
+<span class="operator">BOTH SAEM</span> FOOD <span class="operator">AN</span> <span class="string">"CHEEZBURGER"</span>, <span class="keyword">O</span> <span class="keyword">RLY?</span>
+  <span class="keyword">YA</span> <span class="keyword">RLY</span>
+    <span class="function">VISIBLE</span> <span class="string">"I LIKE CHEEZBURGER :D"</span>
+  <span class="keyword">MEBBE</span> <span class="operator">BOTH SAEM</span> FOOD <span class="operator">AN</span> <span class="string">"COOKIE"</span>
+    <span class="function">VISIBLE</span> <span class="string">"I LIKE COOKIE <span class="variable">::</span>)"</span>
+  <span class="keyword">NO</span> <span class="keyword">WAI</span>
+    <span class="function">VISIBLE</span> <span class="string">"I WANT CHEEZBURGER :("</span>
+<span class="keyword">OIC</span></pre></div>
+
+      <p> This could be re-written as a WTF? (switch) expression: </p><div class="luminous inline"><pre class="code" style=""><span class="keyword">I</span> <span class="keyword">HAS</span> <span class="keyword">A</span> FOOD <span class="keyword">ITZ</span> <span class="string">"CHEEZBURGER"</span>
+FOOD, <span class="keyword">WTF?</span>
+  <span class="keyword">OMG</span> <span class="string">"CHEEZBURGER"</span>
+    <span class="function">VISIBLE</span> <span class="string">"I LIKE CHEEZBURGER :D"</span>
+    <span class="keyword">GTFO</span>       <span class="comment">BTW break</span>
+  <span class="keyword">OMG</span> <span class="string">"COOKIE"</span>  
+    <span class="function">VISIBLE</span> <span class="string">"I LIKE COOKIE <span class="variable">::</span>)"</span>
+    <span class="keyword">GTFO</span>
+  <span class="keyword">OMGWTF</span>    <span class="comment">BTW default</span>
+    <span class="function">VISIBLE</span> <span class="string">"I WANT CHEEZBURGER :("</span>
+<span class="keyword">OIC</span></pre></div>    
+      
+      <h3> Looping </h3>
+      Loops are simply defined as: <div class="luminous inline"><pre class="code" style=""><span class="keyword">IM</span> <span class="keyword">IN</span> <span class="keyword">YR</span> LOOP ... <span class="keyword">KTHX</span></pre></div> where 'loop' may be any arbitrary
+      sequence of letters. This creates an infinite loop which must be exited explicitly with 
+      <div class="luminous inline"><pre class="code" style=""><span class="keyword">GTFO</span></pre></div>. More complex loops can be created as follows:
+      
+<div class="luminous inline"><pre class="code" style=""><span class="keyword">IM</span> <span class="keyword">IN</span> <span class="keyword">YR</span> LOOP <span class="function">UPPIN</span> <span class="keyword">YR</span> COUNTER <span class="keyword">WILE</span> COUNTER <span class="operator">SMALLR THAN</span> <span class="numeric">10</span>
+  <span class="function">VISIBLE</span> COUNTER
+<span class="keyword">IM</span> OUTTA <span class="keyword">YR</span> LOOP</pre></div>
+
+<p>or:
+</p><div class="luminous inline"><pre class="code" style=""><span class="keyword">IM</span> <span class="keyword">IN</span> <span class="keyword">YR</span> LOOP <span class="function">UPPIN</span> <span class="keyword">YR</span> COUNTER <span class="keyword">TIL</span> <span class="operator">BOTH SAEM</span> COUNTER <span class="operator">AN</span> <span class="numeric">10</span>
+  <span class="function">VISIBLE</span> COUNTER
+<span class="keyword">IM</span> OUTTA <span class="keyword">YR</span> LOOP</pre></div>, where 'COUNTER' is just a variable identifier and anything after 
+'til' or 'wile' is an expression. If counter was not previously declared, it's set to integer 0.
+<br> If 'COUNTER' (or whatever) already exists and is set, you can set the loop action to decrement with <div class="luminous inline"><pre class="code" style=""><span class="function">NERFIN</span></pre></div> instead of <div class="luminous inline"><pre class="code" style=""><span class="function">UPPIN</span></pre></div>
+      
+    </div> 
+    
+    <div class="tab" style="display: none;"> 
+      <h3> Operators </h3>
+      
+      The language defined arithmetic operators are:
+      <div class="luminous inline"><pre class="code" style=""><span class="operator">SUM OF</span></pre></div>,<div class="luminous inline"><pre class="code" style=""><span class="operator">DIFF OF</span></pre></div>,<div class="luminous inline"><pre class="code" style=""><span class="operator">PRODUKT OF</span></pre></div>,
+      <div class="luminous inline"><pre class="code" style=""><span class="operator">QUOSHUNT OF</span></pre></div>,<div class="luminous inline"><pre class="code" style=""><span class="operator">MOD OF</span></pre></div>,<div class="luminous inline"><pre class="code" style=""><span class="operator">BIGGR OF</span></pre></div>,
+      <div class="luminous inline"><pre class="code" style=""><span class="operator">SMALLR OF</span></pre></div> which correspond to
+      +, -, *, /, % (modulus), max and min.
+      <br><br>Boolean (logic operators are): <div class="luminous inline"><pre class="code" style=""><span class="operator">BOTH SAEM</span></pre></div>,<div class="luminous inline"><pre class="code" style="">DIFFRINT</pre></div>,
+      <div class="luminous inline"><pre class="code" style=""><span class="operator">BOTH OF</span></pre></div>,<div class="luminous inline"><pre class="code" style=""><span class="operator">EITHER OF</span></pre></div>,<div class="luminous inline"><pre class="code" style=""><span class="operator">WON OF</span></pre></div>,
+      <div class="luminous inline"><pre class="code" style=""><span class="operator">NOT</span></pre></div>,
+      <div class="luminous inline"><pre class="code" style=""><span class="operator">ALL OF</span></pre></div>,<div class="luminous inline"><pre class="code" style=""><span class="operator">ANY OF</span></pre></div>,
+      which correspond to ==, !=, &amp;&amp;, ||, exclusive or, not, nary &amp;&amp; and nary ||.
+      <p>
+      Generally operators use prefix notation and are assembled as follows:
+      </p><div class="luminous inline"><pre class="code" style=""><span class="operator">SUM OF</span> <span class="numeric">1</span> <span class="operator">AN</span> <span class="numeric">2</span></pre></div>, or more complex:<br>
+      <div class="luminous inline"><pre class="code" style=""><span class="operator">BOTH SAEM</span> <span class="operator">SUM OF</span> <span class="numeric">1</span> <span class="operator">AN</span> <span class="numeric">2</span> <span class="operator">AN</span> <span class="numeric">3</span> <span class="comment">BTW this evaluates to WIN</span></pre></div>
+      
+      <p>The expressions' precedence is such that the expressions are evaluate left to right 
+      and may nest
+      </p><div class="luminous inline"><pre class="code" style=""><span class="operator">SUM OF</span> <span class="operator">QUOSHUNT OF</span> <span class="numeric">1</span> <span class="operator">AN</span> <span class="numeric">2</span> <span class="operator">AN</span> <span class="operator">DIFF OF</span> <span class="numeric">3</span> <span class="operator">AN</span> <span class="numeric">4</span></pre></div> is equivalent to (1/2) + (3-4),
+      i.e. <div class="luminous inline"><pre class="code" style="">(<span class="operator">SUM OF</span> (<span class="operator">QUOSHUNT OF</span> <span class="numeric">1</span> <span class="operator">AN</span> <span class="numeric">2</span>) <span class="operator">AN</span> (<span class="operator">DIFF OF</span> <span class="numeric">3</span> <span class="operator">AN</span> <span class="numeric">4</span>))</pre></div> 
+      <br><br> These are all binary operators (i.e. they take two operands) except for 
+      <div class="luminous inline"><pre class="code" style=""><span class="operator">NOT</span></pre></div>, 
+      which is unary (i.e. it takes only one operand), and <div class="luminous inline"><pre class="code" style=""><span class="operator">ALL OF</span></pre></div> and 
+      <div class="luminous inline"><pre class="code" style=""><span class="operator">ANY OF</span></pre></div> which are both nary (i.e. they take an arbitrary number of operands). 
+      Their list of operands is terminated by  <div class="luminous inline"><pre class="code" style="">MKAY</pre></div> or the end of the line.
+      
+      <br><br>
+      Greater than and less than can be achieved by combining the above operators: 
+      <div class="luminous inline"><pre class="code" style=""><span class="operator">BOTH SAEM</span> X <span class="operator">AN</span> [BIGGR|SMALLR] OF X <span class="operator">AN</span> Y</pre></div>, but there also 
+      exist <div class="luminous inline"><pre class="code" style=""><span class="keyword">IZ</span> X <span class="operator">BIGGR THAN</span> Y?</pre></div> and <div class="luminous inline"><pre class="code" style=""><span class="keyword">IZ</span> X <span class="operator">SMALLR THAN</span> Y?</pre></div>.
+      These both create if statements with their condition and must be terminated with <div class="luminous inline"><pre class="code" style=""><span class="keyword">KTHX</span></pre></div>      
+      <br><br>Finally, the concatenation operator is the nary <div class="luminous inline"><pre class="code" style="">SMOOSH</pre></div> and used as follows: 
+      <div class="luminous inline"><pre class="code" style=""><span class="keyword">I</span> <span class="keyword">HAS</span> <span class="keyword">A</span> VAR <span class="keyword">ITZ</span> SMOOSH <span class="string">"STR1"</span> <span class="operator">AN</span> <span class="string">"STR2"</span> <span class="operator">AN</span> <span class="string">"STR"</span> <span class="operator">AN</span> <span class="numeric">3</span> MKAY
+<span class="function">VISIBLE</span> VAR <span class="comment">BTW prints "str1str2str3"</span></pre></div>
+    </div> 
+    <div class="tab" style="display: none;">
+      <h3> Functions </h3>
+      
+      <p>Functions can be defined like this:
+      </p><div class="luminous inline"><pre class="code" style=""><span class="keyword">HOW DUZ I</span> <span class="user_function">ADD</span> <span class="keyword">YR</span> NUM1 <span class="operator">AN</span> <span class="keyword">YR</span> NUM2
+  <span class="keyword">I</span> <span class="keyword">HAS</span> <span class="keyword">A</span> SUM <span class="keyword">ITZ</span> <span class="operator">SUM OF</span> NUM1 <span class="operator">AN</span> NUM2
+  <span class="keyword">FOUND</span> <span class="keyword">YR</span> SUM  <span class="comment">BTW returns sum</span>
+<span class="keyword">IF</span> <span class="keyword">U</span> <span class="keyword">SAY</span> <span class="keyword">SO</span></pre></div>
+    <p>This has defined a function 'add' with two arguments. It can be called like so:
+    
+    </p><div class="luminous inline"><pre class="code" style=""><span class="keyword">I</span> <span class="keyword">HAS</span> <span class="keyword">A</span> SUM <span class="keyword">ITZ</span> ADD <span class="numeric">1</span> <span class="numeric">2</span>
+<span class="function">VISIBLE</span> SUM <span class="comment">BTW prints 3</span></pre></div>
+    <p>Functions are evaluated in the same way as operators, so the return value of a
+    function may be nested inside an operator and vice versa, e.g.:
+</p><div class="luminous inline"><pre class="code" style=""><span class="keyword">I</span> <span class="keyword">HAS</span> <span class="keyword">A</span> NUM <span class="keyword">ITZ</span> ADD <span class="numeric">1</span> <span class="operator">AN</span> <span class="operator">DIFF OF</span> <span class="numeric">1</span> <span class="operator">AN</span> <span class="numeric">2</span>
+<span class="function">VISIBLE</span> NUM  <span class="comment">BTW prints NUM = 1 + (1-2) = 0</span></pre></div>
+
+  <p> Further, if one defines a function which takes zero arguments it looks like a 
+      constant:
+      </p><div class="luminous inline"><pre class="code" style=""><span class="keyword">HOW DUZ I</span> <span class="user_function">PI</span>
+  <span class="keyword">FOUND</span> <span class="keyword">YR</span> <span class="numeric">3.14159</span>
+<span class="keyword">IF</span> <span class="keyword">U</span> <span class="keyword">SAY</span> <span class="keyword">SO</span>
+
+<span class="function">VISIBLE</span> <span class="operator">QUOSHUNT OF</span> <span class="function">PI</span> <span class="operator">AN</span> <span class="numeric">2</span> <span class="comment">BTW prints 1.570795</span></pre></div>
+  
+    </div>
+    
+
+    
+    <div class="tab" style="display: none;">
+      <h3> Escape sequences</h3>
+      <p>
+      In LOLCODE escape sequences inside strings begin with a colon ':'.
+      LOLCODE defines the following escape sequences for use inside strings:      
+      </p><div class="luminous inline"><pre class="code" style=""><span class="string">"<span class="variable">:"</span>"</span>    <span class="comment">BTW An escaped quote</span>
+<span class="string">"<span class="variable">:)</span>"</span>    <span class="comment">BTW newline</span>
+<span class="string">"<span class="variable">:&gt;</span>"</span>    <span class="comment">BTW tab</span>
+<span class="string">"<span class="variable">:o</span>"</span>    <span class="comment">BTW bell (not implemented here)</span>
+<span class="string">"<span class="variable">::</span>"</span>    <span class="comment">BTW colon character.</span>
+<span class="string">"<span class="variable">:{VAR}</span>"</span>  <span class="comment">BTW variable interpolation (inserts the string value of VAR)</span>
+<span class="string">":(HEX)"</span>  <span class="comment">BTW inserts a unicode character with the given hex code</span></pre></div>
+  <p> Named unicode sequences are not yet supported.
+
+  
+    </p></div>
+    
+  </div>
+  
+  <div id="cheat_menu" style="border-top:1px solid;line-height:15px;">
+    <h3 class="tab_selected">Topics</h3>
+    <a class="tab_title"> Comments and Whitespace </a> |
+    <a class="tab_title"> IO </a> |
+    
+    <a class="tab_title"> Variables and Types </a> |
+    
+    <a class="tab_title"> Control and Loops </a> |
+    <a class="tab_title"> Operators </a> |
+    <a class="tab_title"> Functions </a> |
+    <a class="tab_title"> Escape Sequences</a>
+
+  </div>  
+</div>
+
+<div style="margin-top:1em; margin-left: 1em; border-top: 1px solid black">
+<p>
+Šis Dibilų kalbos interpretatorius yra paremtas puikiu <a href="http://asgaard.co.uk/misc/loljs/">Mark Asgaard LOLCODE transliatoriumi</a>, kuris visaip perdirbtas čionai jums ir yra demonstruojamas.
+
+</p></div>
+
+
+
+
+</body></html>
+
