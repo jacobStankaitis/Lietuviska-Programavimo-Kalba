@@ -1,11 +1,13 @@
 /** Examples / tests  for loljs */
   
 var examples = Array();
-
+/*
 examples['Hello World'] = "LABAS\n\
   PARASAI \"Nu labas, ka yra?\"\n\
-ATE\n";
-
+ATE\n";*/
+examples['JUSTINO GIMTADIENIS SND'] = "GIMTADIENISPRASIDEDA\n\
+  JUSTINASMLDC \"AS ESU MLDC, SAKO JUSTINAS\"\n\
+GIMTADIENISBAIGIASI\n";
 examples['If/Else'] = "LABAS\n\
 TA PRASME cionai ivestis ir isvestis su salygomis\n\
 TA PRASME jau cionai kazkokios logikos gal yra\n\

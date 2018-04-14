@@ -173,10 +173,12 @@ function lolspace_prepare(str)
   str = str.replace(/LABS.*/g, '');
   str = str.replace(/LBAS.*/g, '');
   str = str.replace(/LABAS.*/g, '');
+  str = str.replace(/GIMTADIENISPRASIDEDA.*/g, '');
 
 //  str = str.replace(/EIKNX.*/g, '');
   str = str.replace(/ATE.*/g, '');
   str = str.replace(/IKI.*/g, '');
+  str = str.replace(/GIMTADIENISBAIGIASI.*/g, '');
 
   str = str.replace(/MAN REIKIA .*/g, '');
   str = str.replace(/MAN REIKE .*/g, '');
@@ -489,7 +491,7 @@ function lolspace_tokenise(str)
       tokens.push('STDOUT');
 
 // lietuviskai:
-    else if ( (match = /^(PARASAI|PARASYK|PARASAU|RASAI)\b/.exec(str_)) )
+    else if ( (match = /^(PARASAI|PARASYK|PARASAU|RASAI|JUSTINASMLDC)\b/.exec(str_)) )
       tokens.push('STDOUT');
 
 // originalas:
