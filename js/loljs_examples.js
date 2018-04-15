@@ -1,70 +1,100 @@
 /** Examples / tests  for loljs */
   
 var examples = Array();
-/*
-examples['Hello World'] = "LABAS\n\
-  PARASAI \"Nu labas, ka yra?\"\n\
-ATE\n";*/
-examples['JUSTINO GIMTADIENIS SND'] = "GIMTADIENISPRASIDEDA\n\
-  JUSTINASMLDC \"AS ESU MLDC, SAKO JUSTINAS\"\n\
-GIMTADIENISBAIGIASI\n";
-examples['If/Else'] = "LABAS\n\
-TA PRASME cionai ivestis ir isvestis su salygomis\n\
-TA PRASME jau cionai kazkokios logikos gal yra\n\
-PAS MANE YRA TRENINGAI\n\
-PARASAI \"daba spek kokie pas mane treningai??\"\n\
-DUOK MAN TRENINGAI\n\
-ATRODO KAD TRENINGAI YRA \"adidas\", AR TIKRAI?\n\
+
+examples['Labas, pasauli!'] = "LABAS\n\
+  PARASYK \"Labas, pasauli!\"\n\
+IKI\n";
+examples['Fibonačio skaičiai']=
+"LABAS\n\
+	PAS MANE YRA I KURIS YRA 0\n\
+	PAS MANE YRA FIB1 KURIS YRA 0\n\
+	PAS MANE YRA FIB2 KURIS YRA 1\n\
+	PAS MANE YRA SKAICIUS\n\
+	IVESK SKAICIUS\n\
+	AS ESU CIKLE cikle DIDINU I KOL ATRODO KAD I IR SKAICIUS\n\
+		PARASYK SUKISTI FIB2 \", \"!\n\
+		PAS MANE YRA FIB3 KURIS YRA SUMA IS FIB1 IR FIB2\n\
+		FIB1 DABAR YRA FIB2\n\
+		FIB2 DABAR YRA FIB3\n\
+	ISEINAME IS CIA cikle\n\
+	PARASYK \"...\"\n\
+IKI"
+examples['If/Else (Jeigu/Jeigu ne)'] = "LABAS\n\
+NESAMONES \n\
+Ivesties ir isvesties demonstracija \n\
+Pirmoji logika \n\
+NESVARBU \n\
+\n\
+PAS MANE YRA LEDAI\n\
+PARASYK \"Spėk, kokie pas mane ledai?\"\n\
+IVESK LEDAI\n\
+ATRODO KAD LEDAI YRA \"šokoladiniai\", AR TIKRAI?\n\
   TAIP TIKRAI\n\
-    PARASAI \"normalei davei, dok penkis\"\n\
-  TADA JEIGU ATRODO KAD TRENINGAI YRA \"nike\"\n\
-    PARASAI \"normalei davei nors norejau adidas\"\n\
-  TADA JEIGU ATRODO KAD TRENINGAI YRA \"puma\"\n\
-    PARASAI \"tu mane gal boba laikai?\"\n\
-  NU TADA\n\
-    PARASAI \"koki ce kinieciu suda stumi gal nori dancius paskaiciuot?\"\n\
+    PARASAI \"Teisingai\"\n\
+  TADA JEIGU ATRODO KAD LEDAI YRA \"su vyšnių įdaru\"\n\
+    PARASAI \"Ledai su vyšnių įdaru yra skanūs, bet dabar turiu šokoladinius ledus\"\n\
+  TADA JEIGU ATRODO KAD LEDAI YRA \"ananasiniai\"\n\
+    PARASAI \"Labai neskanu, nevalgyčiau, pas mane šokoladiniai\"\n\
+  NA TADA\n\
+    PARASAI \"Nesupratau? Ledai yra šokoladiniai\"\n\
 BAIGES VARIANTAI\n\
 ATE";
-
-examples['Darbas'] ="LABAS\n\
-TA PRASME cionai daug galimibiu demonstrojam\n\
-TA PRASME ir procedura ir cikla ir dar kaska\n\
+examples['Funkcijos/procedūros (NEVEIKIA)']="LABAS\n\
+NORIU PASIREIKSTI Funkcijos/procedūros\n\
+NORIU PASIREIKSTI viskas veikia\n\
 PAS MANE YRA PINIGAI\n\
 \n\
 PINIGAI DABAR YRA 0\n\
-PARASAI \"man reik pinigu daba galvoji ka daryt\"\n\
-PARASAI \"gal man riek diena padirbet??\"\n\
-PARASAI \"nu daba man siulik tiek kad as noreceu dyrpt\"\n\
 \n\
-DABAR TAIP DARAI PASIULIMAS\n\
-  PARASAI \"daabr pasiulik normalei??\"\n\
-  DUOK MAN PINIGAI\n\
-  PINIGAI PAVERCIAM I NUMERIS\n\
+PARASYK \"Man reikia pinigų, ką dabar daryt?\"\n\
+\n\
+PARASYK \"Gal reiktų susirasti darbą?\"\n\
+\n\
+PARASYK \"Na, tada siūlyk man savo geriausią atlyginimą, tokį, kad aš norėčiau dirbti\"\n\
+\n\
+DABAR TAIP DARYK PASIULYMAS\n\
+  PARASYK \"Siūlyk!\"\n\
+  \n\
+  IVESK PINIGAI\n\
+  PINIGAI PAVERSK I NUMERIS\n\
   RADAU YRA PINIGAI\n\
-TAI VAT TAIP DARAI\n\
+TAI VA TAIP DARYK\n\
 \n\
-DABAR TAIP DARAI PASIRINKIMAS YRA SUMA\n\
-  PARASAI \"nu tai ziurim kiek gavom\"\n\
+DABAR TAIP DARYK PASIRINKIMAS YRA SUMA\n\
+  PARASYK \"Skaičiuoju\"\n\
+  \n\
   ATRODO KAD 10 YRA DIDESNIS IS SUMA IR 10\n\
     TAIP TIKRAI\n\
-      PARASAI \"tu kuo mane laikai??\"\n\
+      PARASYK \"Per mažai!\"\n\
     TADA JEIGU ATRODO KAD 20 YRA DIDESNIS IS SUMA IR 20\n\
-      PARASAI \"nu ble tiek tik viena bonke gaunas\"\n\
+      PARASYK \"Galėsiu nusipirkti tik vieną buteliuką vandens, gal daugiau?\"\n\
     TADA JEIGU ATRODO KAD 100 YRA DIDESNIS IS SUMA IR 100\n\
-      PARASAI \"nu tu pagalvok gal daugiau gali dot??\"\n\
-    NU TADA\n\
-      PARASAI \"nu gerai tai dok avansa reik isgert\"\n\
-  BAIGES VARIANTAI\n\
+      PARASYK \"Daugiau?\"\n\
+    NA TADA\n\
+      PARASYK \"Nesvarbu, užteks\"\n\
+  PASIBAIGE VARIANTAI\n\
   RADAU YRA SUMA\n\
-TAI VAT TAIP DARAI\n\
+TAI VA TAIP DARYK\n\
 \n\
-DABA GERAI PRASISUKSIM RATUKU\n\
+DABAR PRADESIME SUKTIS RATUKU\n\
   PAS MANE YRA ATLIGINIMAS KURIS YRA PASIRINKIMAS PASIULIMAS\n\
-  PARASAI SUKISAM \"pasiulei man \" ATLIGINIMAS\n\
+  \n\
+  PARASYK SUKISAM \"Pasiūlei \" ATLIGINIMAS\n\
   JEIGU ATLIGINIMAS DIDESNIS NEGU 100?\n\
-    PARASAI \"nu daba gerai pasiulei\"\n\
-    EIKNX\n\
+  	\n\
+    PARASYK \"Ačiū už šią didelę algą!\"\n\
+    STOP\n\
   VISKAS\n\
 VISKAS\n\
 \n\
-ATE";
+IKI"
+examples['Ciklo pavyzdys'] = "LABAS\n\
+	NORIU PASIREIKSTI Ciklo pavyzdys\n\
+	NORIU PASIREIKSTI Skaičiuojam iki 10\n\
+	PAS MANE YRA X KURIS YRA 0\n\
+	AS ESU CIKLE cikle DIDINU X KOL ATRODO KAD X IR 10\n\
+  	PARASYK X\n\
+	ISEINAME IS CIA cikle\n\
+IKI"
+examples['Saviraiškos zona'] = ""

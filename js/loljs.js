@@ -148,8 +148,8 @@ function lolspace_strip_comments(str)
 {
   str = str.replace(/OBTW([\s\S]*?)TLDR/g, '');
   str = str.replace(/BTW.*/g, '');
-  str = str.replace(/PEZALAI([\s\S]*?)NESVARBU/g, '');
-  str = str.replace(/(TAPRASME|TA PRASME).*/g, '');
+  str = str.replace(/NESAMONES([\s\S]*?)NESVARBU/g, '');
+  str = str.replace(/(TAPRASME|TA PRASME|NORIU PASIREIKSTI).*/g, '');
 
   return str;
 }
@@ -168,24 +168,15 @@ function lolspace_prepare(str)
   str = str.replace(/HAI.*/g, '');
   str = str.replace(/KTHXB(YE|AI).*/g, '');
   str = str.replace(/CAN HAS .*/g, '');
-  
-  str = str.replace(/LBS.*/g, '');
-  str = str.replace(/LABS.*/g, '');
-  str = str.replace(/LBAS.*/g, '');
+
   str = str.replace(/LABAS.*/g, '');
-  str = str.replace(/GIMTADIENISPRASIDEDA.*/g, '');
 
 //  str = str.replace(/EIKNX.*/g, '');
   str = str.replace(/ATE.*/g, '');
   str = str.replace(/IKI.*/g, '');
-  str = str.replace(/GIMTADIENISBAIGIASI.*/g, '');
 
   str = str.replace(/MAN REIKIA .*/g, '');
-  str = str.replace(/MAN REIKE .*/g, '');
-  str = str.replace(/MAN REIK .*/g, '');
-  str = str.replace(/REIKIA .*/g, '');
-  str = str.replace(/REIKE .*/g, '');
-  str = str.replace(/REIK .*/g, '');
+
 
     
   str = str.replace(/[ \t]+/g, ' ');
@@ -205,7 +196,7 @@ function lolspace_prepare(str)
   str = str.replace(/(.*) IS NOW A (.*)/g, '$1 R MAEK $1 A $2');
 
 // lietuviskai: (tipo keitimas)
-  str = str.replace(/(.*) PAVERCIAM I (.*)/g, '$1 R MAEK $1 A $2');
+  str = str.replace(/(.*) PAVERSK I (.*)/g, '$1 R MAEK $1 A $2');
 //  str = str.replace(/(.*) DABA YR (.*)/g, '$1 R MAEK $1 A $2');
 
 // originalas:
@@ -353,7 +344,7 @@ function lolspace_tokenise(str)
       tokens.push('CAST');
 
 // lietuviskai:    
-    else if ((match = /^TOKSAI\b/.exec(str_)))
+    else if ((match = /^TOKS\b/.exec(str_)))
       tokens.push('A');
     else if ( (match = (/^(BUS|AS TURIU TOKI|AS TURIU|PAS MANE YRA TOKSAI|PAS MANE YRA TOKS|PAS MANE YRA)(?=\s)/.exec(str_))) )
       tokens.push('DECLARE');
@@ -392,9 +383,9 @@ function lolspace_tokenise(str)
       tokens.push('IF');
     else if ( (match = /^TADA JEIGU\b/.exec(str_)) )
       tokens.push('ELSE_IF');
-    else if ( (match = /^(TADA|NU TADA)\b/.exec(str_)) )
+    else if ( (match = /^(TADA|NA TADA)\b/.exec(str_)) )
       tokens.push('ELSE');
-    else if( (match = /^(BAIGES VARIJENTAI|NER VARIJENTU|BAIGES VARIANTAI|NERA VARIANTU|BAIGESI VARIANTAI)\b/.exec(str_)))
+    else if( (match = /^(BAIGES VARIJENTAI|NER VARIJENTU|BAIGES VARIANTAI|NERA VARIANTU|PASIBAIGE VARIANTAI)\b/.exec(str_)))
       tokens.push('END_IF');
 
 // originalas:
@@ -459,15 +450,15 @@ function lolspace_tokenise(str)
       tokens.push('LOOP_ACTION');
 
 // lietuviskai:
-    else if ( (match = /^DABA GERAI PRASISUKSIM \w+$/.exec(str_)))
+    else if ( (match = /^DABAR PRADESIME SUKTIS \w+$/.exec(str_)))
       tokens.push('LOOP_INF');
-    else if( (match = /^IM IN [YU]R [a-zA-Z]\w+/.exec(str_)))
+    else if( (match = /^AS ESU CIKLE [a-zA-Z]\w+/.exec(str_)))
       tokens.push('LOOP');
-    else if( (match = /^IM OUTTA [YU]R \w+\b/.exec(str_)))
+    else if( (match = /^ISEINAME IS CIA \w+\b/.exec(str_)))
       tokens.push('END_LOOP');
     else if( (match = /^(WILE|TILL?)\b/.exec(str_)))
       tokens.push('LOOP_CONDITION');
-    else if( (match = /^(UPPIN|NERFIN) [YU]R\b/.exec(str_)))
+    else if( (match = /^(DIDINU|MAZINU) \b/.exec(str_)))
       tokens.push('LOOP_ACTION');
 
 // originalas:
@@ -482,7 +473,7 @@ function lolspace_tokenise(str)
       tokens.push('SCREECH');
     else if ( (match = /^\?/.exec(str_)))
       tokens.push('QUESTION_MARK');
-    else if( (match = /^DIDINAM\b/.exec(str_)))
+    else if( (match = /^DIDINAME\b/.exec(str_)))
       tokens.push('INC_OP');
 
 
@@ -491,7 +482,7 @@ function lolspace_tokenise(str)
       tokens.push('STDOUT');
 
 // lietuviskai:
-    else if ( (match = /^(PARASAI|PARASYK|PARASAU|RASAI|JUSTINASMLDC)\b/.exec(str_)) )
+    else if ( (match = /^(PARASAI|PARASYK|PARASAU|RASAI)\b/.exec(str_)) )
       tokens.push('STDOUT');
 
 // originalas:
@@ -518,14 +509,14 @@ function lolspace_tokenise(str)
       tokens.push('INLINE_IF');
     else if( (match = /^VISKAS\b/.exec(str_)))
       tokens.push('INLINE_IF_END');
-    else if( (match = /^EIKNX\b/.exec(str_)))
+    else if( (match = /^STOP\b/.exec(str_)))
       tokens.push('BREAK');
     else if( (match = /^VARIANTAI\\?\b/.exec(str_)))
       tokens.push('SWITCH');
     
-    else if( (match = /^GAVOSI\b/.exec(str_)))
+    else if( (match = /^TIKO\b/.exec(str_)))
       tokens.push('SWITCH_CASE');
-    else if( (match = /^NESIGAVO\b/.exec(str_)))
+    else if( (match = /^NETIKO\b/.exec(str_)))
       tokens.push('SWITCH_CASE_DEFAULT');  
     
     
@@ -556,15 +547,15 @@ function lolspace_tokenise(str)
       tokens.push('FUNC_DEF_END');
 
 // lietuviskai:    
-    else if( (match = (/^DABAR DARAI TAIP\b/).exec(str_)) )
+    else if( (match = (/^DABAR DARYK TAIP\b/).exec(str_)) )
       tokens.push('FUNC_DEF');
-    else if( (match = (/^DABAR TAIP DARAI\b/).exec(str_)) )
+    else if( (match = (/^DABAR TAIP DARYK\b/).exec(str_)) )
       tokens.push('FUNC_DEF');
     else if( (match = (/^YR\b/).exec(str_)) )
       tokens.push('VAR');
     else if( (match = (/^RADAU\b/).exec(str_)))
       tokens.push('RETURN');
-    else if( (match = (/^TAI VAT TAIP DARAI\b/).exec(str_)) )
+    else if( (match = (/^TAI VA TAIP DARYK\b/).exec(str_)) )
       tokens.push('FUNC_DEF_END');
 
 
@@ -963,10 +954,10 @@ function lolspace_parse_loop(tokens)
 12   [IDENTIIFER] LIMIT
    */
   
-  var action = tokens[5] + (tokens[3].match(/^UPPIN/)? '++' : '--');  
+  var action = tokens[5] + (tokens[3].match(/^DIDINU/)? '++' : '--');  
   var condition = lolspace_eval_line(tokens.slice(8));
 //   alert(condition);
-  if (tokens[7].charAt(0) == 'T') //til
+  if (tokens[7].charAt(0) == 'K') //til
     condition = '!(' + condition + ')';
 
   var init = tokens[5] + '= ((typeof ' + tokens[5] + '=="undefined")? 0 :' + tokens[5] + ')';
