@@ -1,229 +1,207 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="lt-lt" xml:lang="lt-lt">
 
-  <head>
-
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="Lietuvių bendrine kalba paremtos programavimo kalbos interpretatorius ir transliatorius į JavaScript kalbą">
-	<meta name="keywords" content="Programavimas, interpretatorius, transliatorius">
-    <meta name="author" content="Jacob Stankaitis">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta http-equiv="content-language" content="lt-lt" />
-
-    <title>Freelancer - Start Bootstrap Theme</title>
-
-    <!-- Bootstrap core CSS -->
-    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Custom fonts for this template -->
-    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
-    <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css">
-
-    <!-- Plugin CSS -->
-    <link href="vendor/magnific-popup/magnific-popup.css" rel="stylesheet" type="text/css">
-
-    <!-- Custom styles for this template -->
-    <link href="css/freelancer.min.css" rel="stylesheet">
+	<title>Lietuvių bendrinės kalbos interpretatorius</title>
+	<meta name="description" content="Lietuvių bendrine kalba paremtos programavimo kalbos interpretatorius ir transliatorius į JavaScript kalbą">
+	<meta name="keywords" content="Programavimas, interpretatorius, transliatorius">
 	<script src="js/jquery-1.6.1.min.js" type="text/javascript"></script>
-<script src="js/jquery.tabify.min.js" type="text/javascript"></script>
-<script src="js/dragify_jquery.js" type="text/javascript"></script>
-<script src="js/ltjs.js" type="text/javascript"></script> 
-<script src="js/ltjs_pavyzd.js" type="text/javascript"></script> 
-<script src="js/jquery.luminousify.js" type="text/javascript"></script>
-<script type="text/javascript">
-
-
-
-lolspace_set_puts(function(str, newline){
-  var stdout = $('#stdout');
-  str = str.replace(/&/g, '&amp;').replace(/>/g, '&gt;').replace(/</g, '&lt;');
-  $(stdout).text($(stdout).text() + str + ((newline !== false)? '\n' : ''));
-});
-
-
-
-
-$(document).ready(function() {
-  
-  var lms_opts = {
-        url: 'highlight.php',
-        defaultLanguage: 'lolcode',
-        delay: 50,
-        path: 'luminous/',
-        style: 'github.css',
-        inline: true
-  };
-  
-  
-  var el = $('#example_selector');
-
-  for (name in examples)
-  {
-    $(el).append('<option value="' + name + '">' + name + '</option>');
-  } 
-  $(el).change(function(e){
-    $('#input').val( examples[$(this).val()] );
-  });
-  
-  $(el).trigger('change');
-  
-  $('#submit').click(function(e){
-    var js = loljs($('#input').val());
-    function escape_(code) {
-      return code.replace(/&/g, '&amp').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    }
-    function unescape_(code) {
-      return code.replace(/&amp/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
-    }
-
-    $('#lolcode_display').html('<pre id=lolcode_topretty lang="lolcode">' +
-      escape_($('#input').val()) + '</pre>');
-
-    $('#js_display').html('<pre id=js_topretty lang="js">' +
-      escape_(js) + '</pre>');
-
-    
-    $('#js_topretty, #lolcode_topretty').each(function() {
-      $(this).luminousify($.extend({}, lms_opts, {line_numbers: true, inline: false}));
-    });
-    
-    
-    // this is a really bad attempt to sandbox the code.
-    // at the very least, we don't want it to permanently define any globals because these might interfere
-    // with subsequent executions.
-    // doesn't work in IE (does anything?)
-    if (!$.browser.msie)
-    {
-      var w = [];
-      for (var name in window)
-        w[name] = window[name];
-    
-      eval(js);
-      for (var name in window)
-      {
-        try { 
-          if (!(name in w))
-            delete window[name];
-          else if(window[name] != w[name])
-            window[name] = w[name];
-        } catch(e) { continue; }
-      }
-    }
-    else eval(js);
-    
-  });
- $('#page').tabify($('#tab_selector'));
- 
-  var cheat_c = $('#cheatsheet');//.clone();
-  // gaah this is a mess
-  
-  // ie7 and below return null on window.open, it seems, so disable it
-  if ($.browser.msie && Number($.browser.version < 8))
-    $('#cheat_new').hide();
-  $('#cheat_new').click(function(){
-    var w_ = window.open();
-    if (!w_ ) {
-      $('#stdout').append('Sorry, your browser doesn\'t support this!\n');
-      return;
-    }
-      
-    var w = w_.top;
-    w.document.open();
-    w.document.write('<html><head>');
-    w.document.write('<\/head><body>');
-    w.document.write('<\/body><\/html>');
-    w.document.close();
-    
-    var head = $('head', $(w.document));
-    var style = 'pre.eg {display:inline-block; background-color:#e0e0e0; margin-top:0; margin-bottom:0; font-weight:bold;}\
-a, a:visited {color:#008CFF; cursor: default}\
-body {font-size:10pt; font-family:helvetica; }\
-h3 { border-bottom: 2px solid #0066FF; padding-left: 2em} \
-span.luminous_inline { display:inline-block; }\
-pre.luminous_inline {margin-top:0; margin-bottom:0}\
-';
-    var css = w.document.createElement('style');
-    css.type = 'text/css';
-    if (css.styleSheet) 
-      css.styleSheet.cssText = style;
-    else 
-      $(css).text(style);
-    head.append(css);
-    
-    var links = ['/code/luminous/style/luminous.css', '/code/luminous/style/zenophilia.css'];
-    for (var i=0; i<links.length; i++)
-    {
-      var l = w.document.createElement('link');
-      l.type = 'text/css';
-      l.href = links[i];
-      l.rel = 'stylesheet';
-      head.append(l);
-    }
-    
-    var body = $('body', $(w.document));
-    body.css({'margin-right': '1em', 'margin-left' : '1em'} );
-    var contents = $('<div>').css('margin-left', '1em');
-    var cheat = $('#cheat_contents',cheat_c).clone();
-    $('h3', cheat).each(function(i) {
-      $(this).attr('id', 'h_' + i);
-      var $a = $('<a>' + $(this).text() + '</a>');
-      var $h = $(this);
-      $a.click(function() {
-        w.scrollTo(0, $h.offset().top);
-      });
-      contents.append($a);
-      contents.append('<br>');
-    });
-    $('.tab', cheat).show().css('opacity', '1');
-    
-    $(cheat).css( {
-      'position' : 'static',
-      'height' : 'auto', 
-      'width' : '100%'
-      } 
-    );
-    
-    // IE has problems inserting nodes from this window into the new window.
-    // http://tamentis.com/doc/no_such_interface/
-    // That means we've got to use innerHTML to copy the node entirely, but 
-    // we lose the click event handlers, so we'll just drop the contents table.
-    var ie8 = ($.browser.msie && Number($.browser.version) < 9);
-    body.append('<h2>Contents</h2>');
-    if (!ie8) 
-      body.append(contents); 
-    body.append('<p>BTW: Sorry but your back and forward buttons won\'t work :( I did my best but the window breaks with \'real\' links in the contents</p>');
-    if (ie8) 
-      body.append(cheat.get(0).innerHTML);
-    else {
-      body.append(cheat);
-      $('pre.eg', cheat).luminousify(lms_opts);
-    }
- });
- 
- $('#cheat_contents').tabify($('#cheat_menu')).parent().hide();
- 
- $('#cheat').click(function(){
-   $('#cheatsheet').slideDown()
- });
-
- 
- $('#cheatsheet').dragify($('#cheat_bar'));
-
- 
- $('#close_cheatsheet').click(function(){
-   $('#cheatsheet').slideUp();
- });
-   
- $('#clearstdout').click(function() { $('#stdout').html(''); } );
- 
- 
-  $('pre.eg').luminousify(lms_opts);
-
-});
-</script>
-<style type="text/css">
+	<script src="js/jquery.tabify.min.js" type="text/javascript"></script>
+	<script src="js/dragify_jquery.js" type="text/javascript"></script>
+	<script src="js/ltjs.js" type="text/javascript"></script>
+	<script src="js/ltjs_pavyzd.js" type="text/javascript"></script>
+	<script src="js/jquery.luminousify.js" type="text/javascript"></script>
+	<script type="text/javascript">
+		lolspace_set_puts(function(str, newline){
+		  var stdout = $('#stdout');
+		  str = str.replace(/&/g, '&amp;').replace(/>/g, '&gt;').replace(/</g, '&lt;');
+		  $(stdout).text($(stdout).text() + str + ((newline !== false)? '\n' : ''));
+		});
+		
+		
+		
+		
+		$(document).ready(function() {
+		  
+		  var lms_opts = {
+		        url: 'highlight.php',
+		        defaultLanguage: 'lolcode',
+		        delay: 50,
+		        path: 'luminous/',
+		        style: 'github.css',
+		        inline: true
+		  };
+		  
+		  
+		  var el = $('#example_selector');
+		
+		  for (name in examples)
+		  {
+		    $(el).append('<option value="' + name + '">' + name + '</option>');
+		  } 
+		  $(el).change(function(e){
+		    $('#input').val( examples[$(this).val()] );
+		  });
+		  
+		  $(el).trigger('change');
+		  
+		  $('#submit').click(function(e){
+		    var js = loljs($('#input').val());
+		    function escape_(code) {
+		      return code.replace(/&/g, '&amp').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+		    }
+		    function unescape_(code) {
+		      return code.replace(/&amp/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+		    }
+		
+		    $('#lolcode_display').html('<pre id=lolcode_topretty lang="lolcode">' +
+		      escape_($('#input').val()) + '</pre>');
+		
+		    $('#js_display').html('<pre id=js_topretty lang="js">' +
+		      escape_(js) + '</pre>');
+		
+		    
+		    $('#js_topretty, #lolcode_topretty').each(function() {
+		      $(this).luminousify($.extend({}, lms_opts, {line_numbers: true, inline: false}));
+		    });
+		    
+		    
+		    // this is a really bad attempt to sandbox the code.
+		    // at the very least, we don't want it to permanently define any globals because these might interfere
+		    // with subsequent executions.
+		    // doesn't work in IE (does anything?)
+		    if (!$.browser.msie)
+		    {
+		      var w = [];
+		      for (var name in window)
+		        w[name] = window[name];
+		    
+		      eval(js);
+		      for (var name in window)
+		      {
+		        try { 
+		          if (!(name in w))
+		            delete window[name];
+		          else if(window[name] != w[name])
+		            window[name] = w[name];
+		        } catch(e) { continue; }
+		      }
+		    }
+		    else eval(js);
+		    
+		  });
+		 $('#page').tabify($('#tab_selector'));
+		 
+		  var cheat_c = $('#cheatsheet');//.clone();
+		  // gaah this is a mess
+		  
+		  // ie7 and below return null on window.open, it seems, so disable it
+		  if ($.browser.msie && Number($.browser.version < 8))
+		    $('#cheat_new').hide();
+		  $('#cheat_new').click(function(){
+		    var w_ = window.open();
+		    if (!w_ ) {
+		      $('#stdout').append('Sorry, your browser doesn\'t support this!\n');
+		      return;
+		    }
+		      
+		    var w = w_.top;
+		    w.document.open();
+		    w.document.write('<html><head>');
+		    w.document.write('<\/head><body>');
+		    w.document.write('<\/body><\/html>');
+		    w.document.close();
+		    
+		    var head = $('head', $(w.document));
+		    var style = 'pre.eg {display:inline-block; background-color:#e0e0e0; margin-top:0; margin-bottom:0; font-weight:bold;}\
+		a, a:visited {color:#008CFF; cursor: default}\
+		body {font-size:10pt; font-family:helvetica; }\
+		h3 { border-bottom: 2px solid #0066FF; padding-left: 2em} \
+		span.luminous_inline { display:inline-block; }\
+		pre.luminous_inline {margin-top:0; margin-bottom:0}\
+		';
+		    var css = w.document.createElement('style');
+		    css.type = 'text/css';
+		    if (css.styleSheet) 
+		      css.styleSheet.cssText = style;
+		    else 
+		      $(css).text(style);
+		    head.append(css);
+		    
+		    var links = ['/code/luminous/style/luminous.css', '/code/luminous/style/zenophilia.css'];
+		    for (var i=0; i<links.length; i++)
+		    {
+		      var l = w.document.createElement('link');
+		      l.type = 'text/css';
+		      l.href = links[i];
+		      l.rel = 'stylesheet';
+		      head.append(l);
+		    }
+		    
+		    var body = $('body', $(w.document));
+		    body.css({'margin-right': '1em', 'margin-left' : '1em'} );
+		    var contents = $('<div>').css('margin-left', '1em');
+		    var cheat = $('#cheat_contents',cheat_c).clone();
+		    $('h3', cheat).each(function(i) {
+		      $(this).attr('id', 'h_' + i);
+		      var $a = $('<a>' + $(this).text() + '</a>');
+		      var $h = $(this);
+		      $a.click(function() {
+		        w.scrollTo(0, $h.offset().top);
+		      });
+		      contents.append($a);
+		      contents.append('<br>');
+		    });
+		    $('.tab', cheat).show().css('opacity', '1');
+		    
+		    $(cheat).css( {
+		      'position' : 'static',
+		      'height' : 'auto', 
+		      'width' : '100%'
+		      } 
+		    );
+		    
+		    // IE has problems inserting nodes from this window into the new window.
+		    // http://tamentis.com/doc/no_such_interface/
+		    // That means we've got to use innerHTML to copy the node entirely, but 
+		    // we lose the click event handlers, so we'll just drop the contents table.
+		    var ie8 = ($.browser.msie && Number($.browser.version) < 9);
+		    body.append('<h2>Contents</h2>');
+		    if (!ie8) 
+		      body.append(contents); 
+		    body.append('<p>BTW: Sorry but your back and forward buttons won\'t work :( I did my best but the window breaks with \'real\' links in the contents</p>');
+		    if (ie8) 
+		      body.append(cheat.get(0).innerHTML);
+		    else {
+		      body.append(cheat);
+		      $('pre.eg', cheat).luminousify(lms_opts);
+		    }
+		 });
+		 
+		 $('#cheat_contents').tabify($('#cheat_menu')).parent().hide();
+		 
+		 $('#cheat').click(function(){
+		   $('#cheatsheet').slideDown()
+		 });
+		
+		 
+		 $('#cheatsheet').dragify($('#cheat_bar'));
+		
+		 
+		 $('#close_cheatsheet').click(function(){
+		   $('#cheatsheet').slideUp();
+		 });
+		   
+		 $('#clearstdout').click(function() { $('#stdout').html(''); } );
+		 
+		 
+		  $('pre.eg').luminousify(lms_opts);
+		
+		});
+	</script>
+	<style type="text/css">
 		body {font-size:10pt; font-family:helvetica; }
 		#page { min-width: 720px; width: 80%;
 		  float: left;
@@ -254,55 +232,10 @@ pre.luminous_inline {margin-top:0; margin-bottom:0}\
 	</style>
 	<link rel="stylesheet" type="text/css" href="./lolcode_files/luminous.css">
 	<link rel="stylesheet" type="text/css" href="./lolcode_files/github.css">
-    </head>
+</head>
 
-  <body id="page-top">
-
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg bg-secondary fixed-top text-uppercase" id="mainNav">
-      <div class="container">
-        <a class="navbar-brand js-scroll-trigger" href="#page-top">Jokūbas Stankaitis</a>
-        <button class="navbar-toggler navbar-toggler-right text-uppercase bg-primary text-white rounded" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-          Menu
-          <i class="fa fa-bars"></i>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarResponsive">
-          <ul class="navbar-nav ml-auto">
-            <li class="nav-item mx-0 mx-lg-1">
-              <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#portfolio">Lietuvių programavimo kalbos interpretatorius</a>
-            </li>
-            <li class="nav-item mx-0 mx-lg-1">
-              <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#about">Apie</a>
-            </li>
-            <li class="nav-item mx-0 mx-lg-1">
-              <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#contact">Kontaktai</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-
-    <!-- Header -->
-    <header class="masthead bg-primary text-white text-center">
-      <div class="container">
-        <img class="img-fluid mb-5 d-block mx-auto" src="img/profile.png" alt="">
-        <h1 class="text-uppercase mb-0">Jokūbas Stankaitis</h1>
-        <hr class="star-light">
-        <h2 class="font-weight-light mb-0">Web Developer - Web Designer</h2>
-      </div>
-    </header>
-
-    <!-- Portfolio Grid Section -->
-    <section class="portfolio" id="portfolio">
-      <div class="container">
-        <h2 class="text-center text-uppercase text-secondary mb-0" style="line-height:60px">Lietuvių programavimo kalbos interpretatorius</h2>
-        <hr class="star-dark mb-5">
-        
-        
-        
-        
-        
-<h1 >Lietuvių bendrine kalba paremtos programavimo kalbos interpretatorius ir transliatorius į JavaScript kalbą, 0.1v</h1>
+<body>
+	<h1 style="padding:6px; border:2px solid #88AAFF; background:#EEF8FF;">Lietuvių bendrine kalba paremtos programavimo kalbos interpretatorius ir transliatorius į JavaScript kalbą, 0.1v</h1>
 	<noscript>Šitas dalykas veikia tiktai su JavaScript, taigi, pasirinkite - arba įsijungiate JavaScript, arba nieko nematote.</noscript>
 	<!--[if lte IE 7]> <div style='text-align:center; font-weight:bold'> This page won't work with your browser. Get a modern one! <a href='http://www.mozilla.com/'>Firefox</a> </div> <![endif]-->
 	<!--[if IE]> <div style='text-align:center; font-weight:bold'> Some of these examples won't work with Internet Explorer because it disables the prompt() function, and it retains variables across calls so you may need to refresh the page after executing anything. </div> <![endif]-->
@@ -311,14 +244,14 @@ pre.luminous_inline {margin-top:0; margin-bottom:0}\
 		<a href="#" id="lolcode_clicker" class="tab_clicker tab_title">Syntax Highlighted LOLCODE</a>
 		<a href="#" id="about_clicker" class="tab_clicker tab_title">About</a>
 	</div>
-	<div style="text-align:center;">Linksmas interpretatorius kartais veikia, dažniausiai - nelabai. Tokiu atveju rašykit apačioj į nusiskundimų laukelį ;)</div>
+	<div>Čia jums kažkas gali ir neveikti, bet visgi interpretatorius darbingas, tad juo labiausiai ir verta jums pasismaginti.</div>
 	<div id="page">
 		<div id="inp_tab" style="display: block;" class="tab">
 			<table style="width:100%">
 				<tbody>
 					<tr>
 						<td style="vertical-align:top; width:55%;">
-							<h3>Įvestis</h3>
+							<h3>Įvestis - čionai rašykit</h3>
 							<div>
 								<div id="example_holder"><strong>Pavyzdžiai</strong>:
 									<select id="example_selector"></select>
@@ -327,14 +260,15 @@ pre.luminous_inline {margin-top:0; margin-bottom:0}\
 								</div>
 								<textarea id="input" style="width:100%" rows="25"></textarea>
 								<br>
-								<div> Klaidas šis interpretatorius aptinka prastai, todėl pasitikrinkit programą, jei kažkas neveikia</div>
+								<div>Turėkite omeny, kad čia yra pilnavertė Tiuringo mašina. Tai reiškia, kad jūs visada galite parašyti begalinį ciklą ar rekursiją, kuri jūsų naršyklę pakabins brutualiausiu būdu. Jei taip atsitiks - kaltinkite save ir mokykitės, kad neatsitiktų. Ir žinoma, išsisaugokite kažkur tą savo programą, kad ji, jei pakibs, nedingtų.
+									<br>Klaidų aptikimas yra prastas, taigi, jei nematote rezultato - tikrinkitės savo programą, nes greičiausiai kažkur interpretatorius pastrigo.</div>
 								<p>
 									<input type="submit" id="submit" value="Vykdyti programą">
 								</p>
 							</div>
 						</td>
 						<td style="vertical-align:top; width:45%; padding-left:2em;">
-							<h3>Išvestis</h3> 
+							<h3>Išvestis - čionai skaitykit</h3> 
 							<div id="stdout_holder" style="margin-top:2em; padding:4px; border:2px dotted #CCEEEE;">
 								<input type="button" id="clearstdout" value="Išvalyti"> <pre id="stdout"></pre>
 							</div>
@@ -667,354 +601,9 @@ FOOD, <span class="keyword">WTF?</span>
 			<a class="tab_title"> Comments and Whitespace </a> | <a class="tab_title"> IO </a> | <a class="tab_title"> Variables and Types </a> | <a class="tab_title"> Control and Loops </a> | <a class="tab_title"> Operators </a> | <a class="tab_title"> Functions </a> | <a class="tab_title"> Escape Sequences</a>
 		</div>
 	</div>
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		 <!-- 
-        <div class="row">
-          <div class="col-md-6 col-lg-4">
-            <a class="portfolio-item d-block mx-auto" href="#portfolio-modal-1">
-              <div class="portfolio-item-caption d-flex position-absolute h-100 w-100">
-                <div class="portfolio-item-caption-content my-auto w-100 text-center text-white">
-                  <i class="fa fa-search-plus fa-3x"></i>
-                </div>
-              </div>
-              <img class="img-fluid" src="img/portfolio/cabin.png" alt="">
-            </a>
-          </div>
-          <div class="col-md-6 col-lg-4">
-            <a class="portfolio-item d-block mx-auto" href="#portfolio-modal-2">
-              <div class="portfolio-item-caption d-flex position-absolute h-100 w-100">
-                <div class="portfolio-item-caption-content my-auto w-100 text-center text-white">
-                  <i class="fa fa-search-plus fa-3x"></i>
-                </div>
-              </div>
-              <img class="img-fluid" src="img/portfolio/cake.png" alt="">
-            </a>
-          </div>
-          <div class="col-md-6 col-lg-4">
-            <a class="portfolio-item d-block mx-auto" href="#portfolio-modal-3">
-              <div class="portfolio-item-caption d-flex position-absolute h-100 w-100">
-                <div class="portfolio-item-caption-content my-auto w-100 text-center text-white">
-                  <i class="fa fa-search-plus fa-3x"></i>
-                </div>
-              </div>
-              <img class="img-fluid" src="img/portfolio/circus.png" alt="">
-            </a>
-          </div>
-          <div class="col-md-6 col-lg-4">
-            <a class="portfolio-item d-block mx-auto" href="#portfolio-modal-4">
-              <div class="portfolio-item-caption d-flex position-absolute h-100 w-100">
-                <div class="portfolio-item-caption-content my-auto w-100 text-center text-white">
-                  <i class="fa fa-search-plus fa-3x"></i>
-                </div>
-              </div>
-              <img class="img-fluid" src="img/portfolio/game.png" alt="">
-            </a>
-          </div>
-          <div class="col-md-6 col-lg-4">
-            <a class="portfolio-item d-block mx-auto" href="#portfolio-modal-5">
-              <div class="portfolio-item-caption d-flex position-absolute h-100 w-100">
-                <div class="portfolio-item-caption-content my-auto w-100 text-center text-white">
-                  <i class="fa fa-search-plus fa-3x"></i>
-                </div>
-              </div>
-              <img class="img-fluid" src="img/portfolio/safe.png" alt="">
-            </a>
-          </div>
-          <div class="col-md-6 col-lg-4">
-            <a class="portfolio-item d-block mx-auto" href="#portfolio-modal-6">
-              <div class="portfolio-item-caption d-flex position-absolute h-100 w-100">
-                <div class="portfolio-item-caption-content my-auto w-100 text-center text-white">
-                  <i class="fa fa-search-plus fa-3x"></i>
-                </div>
-              </div>
-              <img class="img-fluid" src="img/portfolio/submarine.png" alt="">
-            </a>
-          </div>
-        </div>
-		-->
-      </div>
-    </section>
-
-    <!-- About Section -->
-    <section class="bg-primary text-white mb-0" id="about">
-      <div class="container">
-        <h2 class="text-center text-uppercase text-white">About</h2>
-        <hr class="star-light mb-5">
-        <div class="row">
-          <div class="col-lg-4 ml-auto">
-            <p class="lead">Freelancer is a free bootstrap theme created by Start Bootstrap. The download includes the complete source files including HTML, CSS, and JavaScript as well as optional LESS stylesheets for easy customization.</p>
-          </div>
-          <div class="col-lg-4 mr-auto">
-            <p class="lead">Whether you're a student looking to showcase your work, a professional looking to attract clients, or a graphic artist looking to share your projects, this template is the perfect starting point!</p>
-          </div>
-        </div>
-        <div class="text-center mt-4">
-
-        </div>
-      </div>
-    </section>
-
-    <!-- Contact Section -->
-  <!--  <section id="contact">
-      <div class="container">
-        <h2 class="text-center text-uppercase text-secondary mb-0">Contact Me</h2>
-        <hr class="star-dark mb-5">
-        <div class="row">
-          <div class="col-lg-8 mx-auto">
-            <!-- To configure the contact form email address, go to mail/contact_me.php and update the email address in the PHP file on line 19. -->
-            <!-- The form should work on most web servers, but if the form is not working you may need to configure your web server differently. ->
-            <form name="sentMessage" id="contactForm" novalidate="novalidate">
-              <div class="control-group">
-                <div class="form-group floating-label-form-group controls mb-0 pb-2">
-                  <label>Name</label>
-                  <input class="form-control" id="name" type="text" placeholder="Name" required="required" data-validation-required-message="Please enter your name.">
-                  <p class="help-block text-danger"></p>
-                </div>
-              </div>
-              <div class="control-group">
-                <div class="form-group floating-label-form-group controls mb-0 pb-2">
-                  <label>Email Address</label>
-                  <input class="form-control" id="email" type="email" placeholder="Email Address" required="required" data-validation-required-message="Please enter your email address.">
-                  <p class="help-block text-danger"></p>
-                </div>
-              </div>
-              <div class="control-group">
-                <div class="form-group floating-label-form-group controls mb-0 pb-2">
-                  <label>Phone Number</label>
-                  <input class="form-control" id="phone" type="tel" placeholder="Phone Number" required="required" data-validation-required-message="Please enter your phone number.">
-                  <p class="help-block text-danger"></p>
-                </div>
-              </div>
-              <div class="control-group">
-                <div class="form-group floating-label-form-group controls mb-0 pb-2">
-                  <label>Message</label>
-                  <textarea class="form-control" id="message" rows="5" placeholder="Message" required="required" data-validation-required-message="Please enter a message."></textarea>
-                  <p class="help-block text-danger"></p>
-                </div>
-              </div>
-              <br>
-              <div id="success"></div>
-              <div class="form-group">
-                <button type="submit" class="btn btn-primary btn-xl" id="sendMessageButton">Send</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </section>-->
-
-    <!-- Footer -->
-    <footer class="footer text-center">
-      <div class="container">
-        <div class="row">
-          <div class="col-md-4 mb-5 mb-lg-0">
-            <h4 class="text-uppercase mb-4">Location</h4>
-            <p class="lead mb-0">2215 John Daniel Drive
-              <br>Clark, MO 65243</p>
-          </div>
-          <div class="col-md-4 mb-5 mb-lg-0">
-            <h4 class="text-uppercase mb-4">Around the Web</h4>
-            <ul class="list-inline mb-0">
-              <li class="list-inline-item">
-                <a class="btn btn-outline-light btn-social text-center rounded-circle" href="#">
-                  <i class="fa fa-fw fa-facebook"></i>
-                </a>
-              <li class="list-inline-item">
-                <a class="btn btn-outline-light btn-social text-center rounded-circle" href="#">
-                  <i class="fa fa-fw fa-linkedin"></i>
-                </a>
-              </li>
-			   <li class="list-inline-item">
-                <a class="btn btn-outline-light btn-social text-center rounded-circle" href="#">
-                  <i class="fa fa-fw fa-linkedin"></i>
-                </a>
-              </li>
-            </ul>
-          </div>
-          <div class="col-md-4">
-            <h4 class="text-uppercase mb-4">Apie</h4>
-            <!--<p class="lead mb-0">Jokūbas Jonas Stankaitis</p>-->
-          </div>
-        </div>
-      </div>
-    </footer>
-
-    <div class="copyright py-4 text-center text-white">
-      <div class="container">
-        <small>Visos teisės saugomos &copy; jstankaitis.tk 2018</small>
-      </div>
-    </div>
-
-    <!-- Scroll to Top Button (Only visible on small and extra-small screen sizes) -->
-    <div class="scroll-to-top d-lg-none position-fixed ">
-      <a class="js-scroll-trigger d-block text-center text-white rounded" href="#page-top">
-        <i class="fa fa-chevron-up"></i>
-      </a>
-    </div>
-
-    <!-- Portfolio Modals -->
-
-    <!-- Portfolio Modal 1 -->
-    <div class="portfolio-modal mfp-hide" id="portfolio-modal-1">
-      <div class="portfolio-modal-dialog bg-white">
-        <a class="close-button d-none d-md-block portfolio-modal-dismiss" href="#">
-          <i class="fa fa-3x fa-times"></i>
-        </a>
-        <div class="container text-center">
-          <div class="row">
-            <div class="col-lg-8 mx-auto">
-              <h2 class="text-secondary text-uppercase mb-0">Project Name</h2>
-              <hr class="star-dark mb-5">
-              <img class="img-fluid mb-5" src="img/portfolio/cabin.png" alt="">
-              <p class="mb-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia neque assumenda ipsam nihil, molestias magnam, recusandae quos quis inventore quisquam velit asperiores, vitae? Reprehenderit soluta, eos quod consequuntur itaque. Nam.</p>
-              <a class="btn btn-primary btn-lg rounded-pill portfolio-modal-dismiss" href="#">
-                <i class="fa fa-close"></i>
-                Close Project</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Portfolio Modal 2 -->
-    <div class="portfolio-modal mfp-hide" id="portfolio-modal-2">
-      <div class="portfolio-modal-dialog bg-white">
-        <a class="close-button d-none d-md-block portfolio-modal-dismiss" href="#">
-          <i class="fa fa-3x fa-times"></i>
-        </a>
-        <div class="container text-center">
-          <div class="row">
-            <div class="col-lg-8 mx-auto">
-              <h2 class="text-secondary text-uppercase mb-0">Project Name</h2>
-              <hr class="star-dark mb-5">
-              <img class="img-fluid mb-5" src="img/portfolio/cake.png" alt="">
-              <p class="mb-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia neque assumenda ipsam nihil, molestias magnam, recusandae quos quis inventore quisquam velit asperiores, vitae? Reprehenderit soluta, eos quod consequuntur itaque. Nam.</p>
-              <a class="btn btn-primary btn-lg rounded-pill portfolio-modal-dismiss" href="#">
-                <i class="fa fa-close"></i>
-                Close Project</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Portfolio Modal 3 -->
-    <div class="portfolio-modal mfp-hide" id="portfolio-modal-3">
-      <div class="portfolio-modal-dialog bg-white">
-        <a class="close-button d-none d-md-block portfolio-modal-dismiss" href="#">
-          <i class="fa fa-3x fa-times"></i>
-        </a>
-        <div class="container text-center">
-          <div class="row">
-            <div class="col-lg-8 mx-auto">
-              <h2 class="text-secondary text-uppercase mb-0">Project Name</h2>
-              <hr class="star-dark mb-5">
-              <img class="img-fluid mb-5" src="img/portfolio/circus.png" alt="">
-              <p class="mb-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia neque assumenda ipsam nihil, molestias magnam, recusandae quos quis inventore quisquam velit asperiores, vitae? Reprehenderit soluta, eos quod consequuntur itaque. Nam.</p>
-              <a class="btn btn-primary btn-lg rounded-pill portfolio-modal-dismiss" href="#">
-                <i class="fa fa-close"></i>
-                Close Project</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Portfolio Modal 4 -->
-    <div class="portfolio-modal mfp-hide" id="portfolio-modal-4">
-      <div class="portfolio-modal-dialog bg-white">
-        <a class="close-button d-none d-md-block portfolio-modal-dismiss" href="#">
-          <i class="fa fa-3x fa-times"></i>
-        </a>
-        <div class="container text-center">
-          <div class="row">
-            <div class="col-lg-8 mx-auto">
-              <h2 class="text-secondary text-uppercase mb-0">Project Name</h2>
-              <hr class="star-dark mb-5">
-              <img class="img-fluid mb-5" src="img/portfolio/game.png" alt="">
-              <p class="mb-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia neque assumenda ipsam nihil, molestias magnam, recusandae quos quis inventore quisquam velit asperiores, vitae? Reprehenderit soluta, eos quod consequuntur itaque. Nam.</p>
-              <a class="btn btn-primary btn-lg rounded-pill portfolio-modal-dismiss" href="#">
-                <i class="fa fa-close"></i>
-                Close Project</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Portfolio Modal 5 -->
-    <div class="portfolio-modal mfp-hide" id="portfolio-modal-5">
-      <div class="portfolio-modal-dialog bg-white">
-        <a class="close-button d-none d-md-block portfolio-modal-dismiss" href="#">
-          <i class="fa fa-3x fa-times"></i>
-        </a>
-        <div class="container text-center">
-          <div class="row">
-            <div class="col-lg-8 mx-auto">
-              <h2 class="text-secondary text-uppercase mb-0">Project Name</h2>
-              <hr class="star-dark mb-5">
-              <img class="img-fluid mb-5" src="img/portfolio/safe.png" alt="">
-              <p class="mb-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia neque assumenda ipsam nihil, molestias magnam, recusandae quos quis inventore quisquam velit asperiores, vitae? Reprehenderit soluta, eos quod consequuntur itaque. Nam.</p>
-              <a class="btn btn-primary btn-lg rounded-pill portfolio-modal-dismiss" href="#">
-                <i class="fa fa-close"></i>
-                Close Project</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Portfolio Modal 6 -->
-    <div class="portfolio-modal mfp-hide" id="portfolio-modal-6">
-      <div class="portfolio-modal-dialog bg-white">
-        <a class="close-button d-none d-md-block portfolio-modal-dismiss" href="#">
-          <i class="fa fa-3x fa-times"></i>
-        </a>
-        <div class="container text-center">
-          <div class="row">
-            <div class="col-lg-8 mx-auto">
-              <h2 class="text-secondary text-uppercase mb-0">Project Name</h2>
-              <hr class="star-dark mb-5">
-              <img class="img-fluid mb-5" src="img/portfolio/submarine.png" alt="">
-              <p class="mb-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia neque assumenda ipsam nihil, molestias magnam, recusandae quos quis inventore quisquam velit asperiores, vitae? Reprehenderit soluta, eos quod consequuntur itaque. Nam.</p>
-              <a class="btn btn-primary btn-lg rounded-pill portfolio-modal-dismiss" href="#">
-                <i class="fa fa-close"></i>
-                Close Project</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Bootstrap core JavaScript --
-    <script src="vendor/jquery/jquery.min.js"></script>-->
-    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Plugin JavaScript -->
-    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
-    <script src="vendor/magnific-popup/jquery.magnific-popup.min.js"></script>
-
-    <!-- Contact Form JavaScript -->
-    <script src="js/jqBootstrapValidation.js"></script>
-    <script src="js/contact_me.js"></script>
-
-    <!-- Custom scripts for this template -->
-    <script src="js/freelancer.min.js"></script>
-
-  </body>
+	<div style="margin-top:1em; margin-left: 1em; border-top: 1px solid black">
+		<p>Šis lietuvių kalbos interpretatorius yra paremtas puikiu <a href="http://asgaard.co.uk/misc/loljs/">Mark Asgaard LOLCODE transliatoriumi</a>, kuris visaip perdirbtas čionai jums ir yra demonstruojamas.</p>
+	</div>
+</body>
 
 </html>
