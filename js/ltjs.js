@@ -13,7 +13,7 @@ modification, are permitted provided that the following conditions are met:
       names of its contributors may be used to endorse or promote products
       derived from this software without specific prior written permission.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "display: blockIS" AND
 ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
 DISCLAIMED. IN NO EVENT SHALL MARK WATKINSON BE LIABLE FOR ANY
@@ -509,7 +509,7 @@ function lolspace_tokenise(str)
       tokens.push('INLINE_IF');
     else if( (match = /^VISKAS\b/.exec(str_)))
       tokens.push('INLINE_IF_END');
-    else if( (match = /^STOP\b/.exec(str_)))
+    else if( (match = /^BAIGIAM\b/.exec(str_)))
       tokens.push('BREAK');
     else if( (match = /^VARIANTAI\\?\b/.exec(str_)))
       tokens.push('SWITCH');
@@ -551,7 +551,7 @@ function lolspace_tokenise(str)
       tokens.push('FUNC_DEF');
     else if( (match = (/^DABAR TAIP DARYK\b/).exec(str_)) )
       tokens.push('FUNC_DEF');
-    else if( (match = (/^YR\b/).exec(str_)) )
+    else if( (match = (/^PARAMETRAS\b/).exec(str_)) )
       tokens.push('VAR');
     else if( (match = (/^RADAU\b/).exec(str_)))
       tokens.push('RETURN');
