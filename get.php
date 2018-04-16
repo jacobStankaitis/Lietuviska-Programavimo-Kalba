@@ -2,7 +2,7 @@
 
 
 $kodas="";
-if(isset($_POST['kodas'])){$kodas=$_POST['kodas']}
+if(isset($_POST['nusi'])){$kodas=$_POST['nusi']}
 $data = time();
 $servername = "localhost";
 $username = "id5392714_admin";
@@ -18,7 +18,6 @@ if ($conn->connect_error) {
 
 $sql = "INSERT INTO kodai (kodas, data, data_skaicius)
 VALUES ('$kodas', '$data', '$data')";
-
 $conn->close();
 echo $time."<br>";
 echo $date;

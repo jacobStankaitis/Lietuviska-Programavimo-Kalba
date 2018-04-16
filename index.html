@@ -226,24 +226,26 @@ pre.luminous_inline {margin-top:0; margin-bottom:0}\
 
 });
 
- $(function () {
+$(function() {
+  $("#input").click(function() {
+  var time = $("#input").val();
 
-        $('#input').on('submit', function (e) {
 
-          e.preventDefault();
 
-          $.ajax({
-            type: 'post',
-            url: 'post.php',
-            data: $('input').serialize(),
-            success: function () {
-              alert('form was submitted');
-            }
-          });
 
-        });
+  $.ajax({
+    type: "POST",
+    url: "post.php",
+    data: time,
+    success: function(){
+     $('.success').fadeIn(200).show();
+     $('.error').fadeOut(200).hide();
+    }
+  });
 
-      });
+return false;
+});
+});
 
 </script>
 <style type="text/css">
@@ -695,8 +697,11 @@ FOOD, <span class="keyword">WTF?</span>
 			<a class="tab_title"> Comments and Whitespace </a> | <a class="tab_title"> IO </a> | <a class="tab_title"> Variables and Types </a> | <a class="tab_title"> Control and Loops </a> | <a class="tab_title"> Operators </a> | <a class="tab_title"> Functions </a> | <a class="tab_title"> Escape Sequences</a>
 		</div>
 	</div>
-	
-
+	<!--<h2 style="font-size:30px;"> Nusiskundimai / Įdomus kodas </h2>
+<form action="get.php" method="post">
+<input type="textarea" class="form-control" style="height: 400px;width: 44.5%;" id="nusi"><br>
+<input type="submit" class="btn btn-danger">
+</form>-->
 
 
 
