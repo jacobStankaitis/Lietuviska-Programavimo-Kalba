@@ -2,7 +2,7 @@
   
 var examples = Array();
 
-examples['Labas, pasauli!'] = "LABAS\n\
+examples['Labas, pasauli!'] = "SVEIKIII\n\
   PARASYK \"Labas, pasauli!\"\n\
 IKI\n";
 examples['Fibonačio skaičiai']=

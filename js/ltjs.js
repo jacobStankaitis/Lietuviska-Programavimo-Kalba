@@ -166,6 +166,7 @@ function lolspace_prepare(str)
   // we don't really care about hai or kthxbye or includes
 
   str = str.replace(/LABAS.*/g, '');
+   str = str.replace(/SVEIKIII.*/g, '');
 
 //  str = str.replace(/EIKNX.*/g, '');
   str = str.replace(/ATE.*/g, '');
