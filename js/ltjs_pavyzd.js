@@ -40,7 +40,7 @@ examples['If/Else (Jeigu/Jeigu ne)'] = "LABAS\n\
 			PARASYK \"Nesupratau? Ledai yra šokoladiniai\"\n\
 	PASIBAIGE VARIANTAI\n\
 ATE";
-examples['Funkcijos/procedūros (NEVEIKIA)']="LABAS\n\
+examples['Funkcijos/procedūros']="LABAS\n\
 	NORIU PASIREIKSTI Funkcijos/procedūros\n\
 	NORIU PASIREIKSTI viskas veikia\n\
 	AS TURIU PINIGAI\n\
@@ -94,6 +94,7 @@ examples['Ciklo pavyzdys'] = "LABAS\n\
 	NORIU PASIREIKSTI Skaičiuojam iki įvesties (SKAICIUS)\n\
 	PAS MANE YRA X KURIS YRA 0\n\
 	AS TURIU SKAICIUS\n\
+	IVESK SKAICIUS\n\
 	AS ESU CIKLE cikle DIDINU X KOL ATRODO KAD X IR SKAICIUS\n\
   	PARASYK X\n\
 	ISEINAME IS CIA cikle\n\

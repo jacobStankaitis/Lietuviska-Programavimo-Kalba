@@ -96,7 +96,7 @@ function lolspace_len(x)
 /*
  * casts a value to array.
  * If the value is a string, it is split by each character
- * if not, the result is just an array consisting of the input 
+ * if not, the result is just an  consisting of the input 
  */
 function lolspace_cast_bukkit(val)
 {
@@ -109,7 +109,7 @@ function lolspace_cast_bukkit(val)
 function lolspace_error(errstr)
 {
   if (!lolspace_errored || lolspace_puts_cb != null)
-    lolspace_puts("loljs hit an error, sorry!\n" + errstr);
+    lolspace_puts("Galutinai sulaužei mane, buržujau!\n" + errstr);
   lolspace_errored = true;
 }
 
@@ -369,7 +369,7 @@ function lolspace_tokenise(str)
     
 // lietuviskai:
 
-    else if( (match = /^(NOOB|YARN|NUMBR|NUMBAR|TROOF|BUKKIT)(?=\s)/.exec(str_)) )
+    else if( (match = /^(NOOB|YARN|NUMBR|NUMBAR|TROOF|BUKKIT|KRUVA|TUSCIA|NUMERIS|RAIDES|LOGIKA)(?=\s)/.exec(str_)) )
       tokens.push('TYPE');
     else if( (match = /^(MAZESNIS|DIDESNIS) NEGU\b/.exec(str_)) )
       tokens.push('CMP_OP');
@@ -421,7 +421,7 @@ function lolspace_tokenise(str)
     else if( (match = (/^(VISI|BET KURIS|CHR|ORD|LEN) IS\b/.exec(str_))))
       tokens.push('NARY_OP');
     // bukkit assignment
-    else if( (match = (/^GOT\b/.exec(str_)) ))
+    else if( (match = (/^TURI\b/.exec(str_)) ))
       tokens.push('NARY_OP');
 
 // originalas:    
@@ -527,7 +527,7 @@ function lolspace_tokenise(str)
 
 // lietuviskai
     // Nothing denotes an empty array, so we treat it as a termination
-    else if( match = /^(TAI TIEK|NOTHING?(?: ELSE)?)\b/.exec(str_))
+    else if( match = /^(TAI TIEK|NIEKO?(?: ELSE)?)\b/.exec(str_))
       tokens.push('OP_TERM');
 
 
@@ -565,7 +565,7 @@ function lolspace_tokenise(str)
     }
     else if ((match = str_.match(/^\S+/)))
     {
-      lolspace_error('Tokeniser: unrecognised sequence:\n' + str_.match(/^\S+/) + '\n' + str_.substr(i));
+      lolspace_error('Tokeniser: neatpažinta seka:\n' + str_.match(/^\S+/) + '\n' + str_.substr(i));
       i+=match[0].length-1;
     }
     
@@ -573,7 +573,7 @@ function lolspace_tokenise(str)
       
   }
   if (tokens.length != string.length)
-    lolspace_error('Somehow I ended up with a different number of tokens than matches. This is fatal. Sorry.')    
+    lolspace_error('Kažkaip atsirado daugiau žetonų nei sutapimų. Kaput, sveikinu, sulaužei, buržujau!')    
   var ret = [];
   for (var i=0; i<tokens.length; i++)
   {
@@ -689,11 +689,11 @@ function lolspace_eval_expr(tokens)
     'SUKISTI':  {symbol: '+', nary:-1, before:'""+', after:''},
     'NE' : { symbol:'', nary:1, before:'!(', after:')'},
               
-    'GOT' : { symbol:',', nary:-1, before:'[', after:']'},
+    'TURI' : { symbol:',', nary:-1, before:'[', after:']'},
     
     'CHR OF' : {symbol:'', nary:1, before:'lolspace_chr(', after:')'},
     'ORD OF' : {symbol:'', nary:1, before:'lolspace_ord(', after:')'},
-    'LEN OF' : {symbol:'', nary:1, before:'lolspace_len(', after:')'}
+    'ILGIS SITO' : {symbol:'', nary:1, before:'lolspace_len(', after:')'}
 
 
 	    

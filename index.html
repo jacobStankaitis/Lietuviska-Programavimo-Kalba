@@ -71,6 +71,7 @@ $(document).ready(function() {
   $(el).trigger('change');
   
   $('#submit').click(function(e){
+	$('#stdout').html('');
     var js = loljs($('#input').val());
     function escape_(code) {
       return code.replace(/&/g, '&amp').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -88,6 +89,7 @@ $(document).ready(function() {
     
     $('#js_topretty, #lolcode_topretty').each(function() {
       $(this).luminousify($.extend({}, lms_opts, {line_numbers: true, inline: false}));
+	  
     });
     
     
@@ -223,6 +225,26 @@ pre.luminous_inline {margin-top:0; margin-bottom:0}\
   $('pre.eg').luminousify(lms_opts);
 
 });
+
+ $(function () {
+
+        $('#input').on('submit', function (e) {
+
+          e.preventDefault();
+
+          $.ajax({
+            type: 'post',
+            url: 'post.php',
+            data: $('input').serialize(),
+            success: function () {
+              alert('form was submitted');
+            }
+          });
+
+        });
+
+      });
+
 </script>
 <style type="text/css">
 		body {font-size:10pt; font-family:helvetica; }
@@ -331,18 +353,18 @@ pre.luminous_inline {margin-top:0; margin-bottom:0}\
 									<div style="float:right; right:0px; display:none;"><a href="#" id="cheat">Show cheat sheet</a>  <a href="http://asgaard.co.uk/misc/loljs/#" id="cheat_new">(new window)</a>
 									</div>
 								</div>
-								<textarea id="input" style="width:100%" rows="25"></textarea>
+								<textarea id="input" class="form-control"  style="width:100%; position:relative; top:10px; font-size:inherit!important" rows="25"></textarea>
 								<br>
 								<div> Klaidas šis interpretatorius aptinka prastai, todėl pasitikrinkit programą, jei kažkas neveikia</div>
 								<p>
-									<input type="submit" id="submit" value="Vykdyti programą">
+									<input class="btn btn-success" type="submit" id="submit" value="Vykdyti programą ir išvalyti išvestį">
 								</p>
 							</div>
 						</td>
 						<td style="vertical-align:top; width:45%; padding-left:2em;">
 							<h3>Išvestis</h3> 
-							<div id="stdout_holder" style="margin-top:2em; padding:4px; border:2px dotted #CCEEEE;">
-								<input type="button" id="clearstdout" value="Išvalyti"> <pre id="stdout"></pre>
+							<div id="stdout_holder" style="margin-top: 2em;padding: 4px;position: relative;top: 10px;border: 2px solid rgba(93, 163, 238, 0.5);display: block;width: 100%;padding: .375rem .75rem;font-size: 1rem;line-height: 1.5;color: #495057;background-color: #fff;background-clip: padding-box;border-radius: .25rem;transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;">
+								<input type="button" id="clearstdout" class="btn btn-danger" value="Išvalyti"> <pre id="stdout"></pre>
 							</div>
 						</td>
 					</tr>
