@@ -146,10 +146,9 @@ function lolspace_func_get_num_args(funcname)
 
 function lolspace_strip_comments(str)
 {
-  str = str.replace(/OBTW([\s\S]*?)TLDR/g, '');
-  str = str.replace(/BTW.*/g, '');
+
   str = str.replace(/NESAMONES([\s\S]*?)NESVARBU/g, '');
-  str = str.replace(/(TAPRASME|TA PRASME|NORIU PASIREIKSTI).*/g, '');
+  str = str.replace(/(TA PRASME|NORIU PASIREIKSTI).*/g, '');
 
   return str;
 }
@@ -165,9 +164,6 @@ function lolspace_prepare(str)
 
 
   // we don't really care about hai or kthxbye or includes
-  str = str.replace(/HAI.*/g, '');
-  str = str.replace(/KTHXB(YE|AI).*/g, '');
-  str = str.replace(/CAN HAS .*/g, '');
 
   str = str.replace(/LABAS.*/g, '');
 
@@ -193,7 +189,7 @@ function lolspace_prepare(str)
 
 // originalas:
   // alias the 'x IS NOW A ' to 'x R MAEK..'
-  str = str.replace(/(.*) IS NOW A (.*)/g, '$1 R MAEK $1 A $2');
+ // str = str.replace(/(.*) IS NOW A (.*)/g, '$1 R MAEK $1 A $2');
 
 // lietuviskai: (tipo keitimas)
   str = str.replace(/(.*) PAVERSK I (.*)/g, '$1 R MAEK $1 A $2');
@@ -212,12 +208,12 @@ function lolspace_prepare(str)
   str = str.replace(/\bWIN\b/g, 'true');
   str = str.replace(/\bFAIL\b/g, 'false');
 
-  str = str.replace(/\bTEISIBE\b/g, 'true');
+
   str = str.replace(/\bTEISYBE\b/g, 'true');
   str = str.replace(/\bTIESA\b/g, 'true');
   str = str.replace(/\bNEMELAS\b/g, 'true');
+  
   str = str.replace(/\bMELAS\b/g, 'false');
-  str = str.replace(/\bNETEISIBE\b/g, 'false');
   str = str.replace(/\bNETIESA\b/g, 'false');
   str = str.replace(/\bNETEISYBE\b/g, 'false');
 
